@@ -18,6 +18,7 @@
 		28023B6D16C0D9EF004C9E8A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 28023B6C16C0D9EF004C9E8A /* Default@2x.png */; };
 		28023B6F16C0D9EF004C9E8A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 28023B6E16C0D9EF004C9E8A /* Default-568h@2x.png */; };
 		28023B7216C0D9EF004C9E8A /* LockBox.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 28023B7016C0D9EF004C9E8A /* LockBox.xcdatamodeld */; };
+		2841A5EF16C1DD69001B6F10 /* LockBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 2841A5EE16C1DD69001B6F10 /* LockBox.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,8 @@
 		28023B6C16C0D9EF004C9E8A /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		28023B6E16C0D9EF004C9E8A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		28023B7116C0D9EF004C9E8A /* LockBox.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LockBox.xcdatamodel; sourceTree = "<group>"; };
+		2841A5ED16C1DD69001B6F10 /* LockBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockBox.h; sourceTree = "<group>"; };
+		2841A5EE16C1DD69001B6F10 /* LockBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockBox.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +90,8 @@
 				28023B6716C0D9EE004C9E8A /* AppDelegate.h */,
 				28023B6816C0D9EF004C9E8A /* AppDelegate.m */,
 				28023B7016C0D9EF004C9E8A /* LockBox.xcdatamodeld */,
+				2841A5ED16C1DD69001B6F10 /* LockBox.h */,
+				2841A5EE16C1DD69001B6F10 /* LockBox.m */,
 				28023B5F16C0D9EE004C9E8A /* Supporting Files */,
 			);
 			path = LockBox;
@@ -174,6 +179,7 @@
 				28023B6516C0D9EE004C9E8A /* main.m in Sources */,
 				28023B6916C0D9EF004C9E8A /* AppDelegate.m in Sources */,
 				28023B7216C0D9EF004C9E8A /* LockBox.xcdatamodeld in Sources */,
+				2841A5EF16C1DD69001B6F10 /* LockBox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +294,7 @@
 				28023B7716C0D9EF004C9E8A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
