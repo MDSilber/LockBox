@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "LockBoxListViewController.h"
 
 @implementation AppDelegate
 
@@ -17,7 +18,15 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
     // Override point for customization after application launch.
+    LockBoxListViewController *lockBoxListViewController = [[LockBoxListViewController alloc] init];
+    _nav = [[UINavigationController alloc] initWithRootViewController:lockBoxListViewController];
+    [[self window] setRootViewController:_nav];
+    
+    //App should always start in a locked state
+    _appState = locked;
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
