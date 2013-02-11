@@ -191,6 +191,7 @@
         NSAssert(self.verifyBlock, @"No passcode verify block is set");
         [self updatePasscodeDisplay];
         if ([self.inputField.text length] == 4) {
+            //Changing pin
             if (self.mode == GCPINViewControllerModeCreate) {
                 if (self.text == nil) {
                     self.text = self.inputField.text;
@@ -217,6 +218,7 @@
                     }
                 }
             }
+            //Verifying pin
             else if (self.mode == GCPINViewControllerModeVerify) {
                 if (self.verifyBlock(self.inputField.text)) {
                     [self dismiss];
