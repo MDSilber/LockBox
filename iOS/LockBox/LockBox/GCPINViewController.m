@@ -7,6 +7,8 @@
 //
 
 #import "GCPINViewController.h"
+#import "SFHFKeychainUtils.h"
+#import "AppDelegate.h"
 
 #define kGCPINViewControllerDelay 0.3
 
@@ -120,16 +122,10 @@
 - (void)dismiss {
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     __dismiss = YES;
+    
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, kGCPINViewControllerDelay * NSEC_PER_SEC);
     dispatch_after(time, dispatch_get_main_queue(), ^(void){
-        [self dismissViewControllerAnimated:YES completion:^{
-            if([self isChangingPIN])
-            {
-                [self setIsChangingPIN:NO];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"PresentChangePinViewControllerNotification" object:nil];
-            }
-        }];
-        
+        [self dismissViewControllerAnimated:YES completion:0];
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
     });
 }
@@ -205,10 +201,7 @@
                     self.text = self.inputField.text;
                     //Clear password
                     [self setMessageText:@"Please re-enter password"];
-                    for (NSUInteger i = 0; i < 4; i++) {
-                        UILabel *label = [self.labels objectAtIndex:i];
-                        label.text = @"";
-                    }
+                    [self clearTextBoxes];
                     [self resetInput];
                 }
                 else {
@@ -218,10 +211,7 @@
                     }
                     else {
                         [self setMessageText:@"Please set your passcode"];
-                        for (NSUInteger i = 0; i < 4; i++) {
-                            UILabel *label = [self.labels objectAtIndex:i];
-                            label.text = @"";
-                        }
+                        [self clearTextBoxes];
                         [self wrong];
                     }
                 }
@@ -229,13 +219,34 @@
             //Verifying pin
             else if (self.mode == GCPINViewControllerModeVerify) {
                 if (self.verifyBlock(self.inputField.text)) {
-                    [self dismiss];
+                    if([self isChangingPIN])
+                    {
+                        [self setIsChangingPIN:NO];
+                        [self setMode:GCPINViewControllerModeCreate];
+                        self.messageText = @"Please set your passcode";
+                        self.title = @"Set passcode";
+                        self.errorText = @"Passcodes do not match";
+                        self.verifyBlock = ^(NSString *code){
+                            NSLog(@"Code set:%@", code);
+                            [(AppDelegate *)[[UIApplication sharedApplication] delegate] setAppState:unlocked];
+                            NSError *error = nil;
+                            [SFHFKeychainUtils storeUsername:USERNAME andPassword:code forServiceName:APPSERVICE updateExisting:YES error:&error];
+                            if(error) {
+                                NSLog(@"Error saving new passcode in keychain: %@", [error description]);
+                            }
+                            return YES;
+                        };
+                        [self clearTextBoxes];
+                        [self resetInput];
+                        return;
+                    }
+                    else
+                    {
+                        [self dismiss];
+                    }
                 }
                 else {
-                    for (NSUInteger i = 0; i < 4; i++) {
-                        UILabel *label = [self.labels objectAtIndex:i];
-                        label.text = @"";
-                    }
+                    [self clearTextBoxes];
                     [self wrong];
                 }
             }
@@ -255,4 +266,11 @@
     return __dismiss;
 }
 
+-(void)clearTextBoxes
+{
+    for (NSUInteger i = 0; i < 4; i++) {
+        UILabel *label = [self.labels objectAtIndex:i];
+        label.text = @"";
+    }
+}
 @end

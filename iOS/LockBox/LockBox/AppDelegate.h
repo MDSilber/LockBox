@@ -15,6 +15,9 @@ enum state{
     unlocked = 1
 };
 
+#define USERNAME @"DEFAULTUSERNAME"
+#define APPSERVICE @"LOCKBOX"
+
 @property (nonatomic) enum state appState;
 
 @property (strong, nonatomic) UIWindow *window;

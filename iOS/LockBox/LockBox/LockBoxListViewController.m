@@ -12,9 +12,6 @@
 #import "LockboxTableViewCell.h"
 #import "SFHFKeychainUtils.h"
 
-#define USERNAME @"DEFAULTUSERNAME"
-#define APPSERVICE @"LOCKBOX"
-
 @interface LockBoxListViewController ()
 
 @end
@@ -27,7 +24,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[self lockboxTable] setDelegate:nil];
     [[self lockboxTable] setDataSource:nil];
 }
@@ -69,9 +65,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
         [[self navigationItem] setRightBarButtonItem:addLockbox];
         UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
-        [[self navigationItem] setLeftBarButtonItem:editLockboxes];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentChangePinViewController:) name:@"PresentChangePinViewControllerNotification" object:nil];
+        [[self navigationItem] setLeftBarButtonItem:editLockboxes];        
     }
     return self;
 }
@@ -157,25 +151,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     };
     
     [verifyPin presentFromViewController:self animated:YES];
-}
-
--(void)presentChangePinViewController:(NSNotification *)notif
-{
-    GCPINViewController *changePin = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeCreate];
-    changePin.messageText = @"Please set your passcode";
-    changePin.title = @"Set passcode";
-    changePin.errorText = @"Passcodes do not match";
-    changePin.verifyBlock = ^(NSString *code){
-        NSLog(@"Code set:%@", code);
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] setAppState:unlocked];
-        NSError *error = nil;
-        [SFHFKeychainUtils storeUsername:USERNAME andPassword:code forServiceName:APPSERVICE updateExisting:YES error:&error];
-        if(error) {
-            NSLog(@"Error saving new passcode in keychain: %@", [error description]);
-        }
-        return YES;
-    };
-    [changePin presentFromViewController:self animated:YES];
 }
 
 #pragma mark - UITableView methods
