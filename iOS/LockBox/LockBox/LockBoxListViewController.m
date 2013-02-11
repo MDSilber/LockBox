@@ -11,6 +11,7 @@
 #import "GCPINViewController.h"
 #import "LockboxTableViewCell.h"
 #import "SFHFKeychainUtils.h"
+#import "AddLockboxViewController.h"
 
 @interface LockBoxListViewController ()
 
@@ -79,13 +80,14 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [[self view] setBackgroundColor:[UIColor redColor]];
 	// Do any additional setup after loading the view.
     [_lockboxTable registerClass:[LockboxTableViewCell class] forCellReuseIdentifier:@"Cell"];
     
     _lockboxTable = [[UITableView alloc] initWithFrame:[[self view] frame] style:UITableViewStyleGrouped];
     [_lockboxTable setDelegate:self];
     [_lockboxTable setDataSource:self];
+    [_lockboxTable setBackgroundView:nil];
+    [_lockboxTable setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
     [[self view] addSubview:_lockboxTable];
     
     lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
@@ -119,7 +121,9 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)addLockbox:(id)sender
 {
-    
+    AddLockboxViewController *addLockbox = [[AddLockboxViewController alloc] init];
+    [addLockbox setTitle:@"Add Lockbox"];
+    [[self navigationController] pushViewController:addLockbox animated:YES];
 }
 
 -(void)editLockboxes:(id)sender

@@ -30,6 +30,7 @@
 		2896C16116C6274400A744CA /* PINBox@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2896C15C16C6274400A744CA /* PINBox@2x.png */; };
 		289D517F16C8750200AEC353 /* unlocked.png in Resources */ = {isa = PBXBuildFile; fileRef = 289D517D16C8750200AEC353 /* unlocked.png */; };
 		289D518016C8750200AEC353 /* locked.png in Resources */ = {isa = PBXBuildFile; fileRef = 289D517E16C8750200AEC353 /* locked.png */; };
+		28C02DEF16C975100081ED83 /* AddLockboxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28C02DEE16C975100081ED83 /* AddLockboxViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,8 @@
 		2896C15C16C6274400A744CA /* PINBox@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PINBox@2x.png"; sourceTree = "<group>"; };
 		289D517D16C8750200AEC353 /* unlocked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unlocked.png; sourceTree = "<group>"; };
 		289D517E16C8750200AEC353 /* locked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = locked.png; sourceTree = "<group>"; };
+		28C02DED16C975100081ED83 /* AddLockboxViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddLockboxViewController.h; path = ../AddLockboxViewController.h; sourceTree = "<group>"; };
+		28C02DEE16C975100081ED83 /* AddLockboxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AddLockboxViewController.m; path = ../AddLockboxViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +119,8 @@
 			isa = PBXGroup;
 			children = (
 				2896C15616C6273A00A744CA /* PinView */,
+				28C02DED16C975100081ED83 /* AddLockboxViewController.h */,
+				28C02DEE16C975100081ED83 /* AddLockboxViewController.m */,
 				28023B6716C0D9EE004C9E8A /* AppDelegate.h */,
 				28023B6816C0D9EF004C9E8A /* AppDelegate.m */,
 				28023B7016C0D9EF004C9E8A /* LockBox.xcdatamodeld */,
@@ -240,6 +245,7 @@
 				2841A5F216C1E4C0001B6F10 /* LockBoxListViewController.m in Sources */,
 				2896C15D16C6274400A744CA /* GCPINViewController.m in Sources */,
 				280C30F216C6FF67008E572D /* LockboxTableViewCell.m in Sources */,
+				28C02DEF16C975100081ED83 /* AddLockboxViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
