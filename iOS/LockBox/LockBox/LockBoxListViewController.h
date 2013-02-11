@@ -17,5 +17,7 @@
 -(NSString *)checkIfPINExists;
 -(void)addLockbox:(id)sender;
 -(void)editLockboxes:(id)sender;
+-(void)changePIN;
+-(void)presentChangePinViewController:(NSNotification *)notif;
 
 @end

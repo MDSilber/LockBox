@@ -78,6 +78,7 @@ typedef BOOL (^GCPasscodeVerifyBlock) (NSString *code);
  */
 @property (nonatomic, readonly, assign) GCPINViewControllerMode mode;
 
+@property BOOL isChangingPIN;
 /*
  
  Create a new passcode view controller providing the nib name, bundle, and

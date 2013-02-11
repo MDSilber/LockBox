@@ -21,8 +21,16 @@
 
 GCPINViewController *lockScreen;
 UINavigationController *lockScreenNav;
+UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 @implementation LockBoxListViewController
+
+-(void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[self lockboxTable] setDelegate:nil];
+    [[self lockboxTable] setDataSource:nil];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -62,6 +70,8 @@ UINavigationController *lockScreenNav;
         [[self navigationItem] setRightBarButtonItem:addLockbox];
         UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
         [[self navigationItem] setLeftBarButtonItem:editLockboxes];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(presentChangePinViewController:) name:@"PresentChangePinViewControllerNotification" object:nil];
     }
     return self;
 }
@@ -83,6 +93,9 @@ UINavigationController *lockScreenNav;
     [_lockboxTable setDelegate:self];
     [_lockboxTable setDataSource:self];
     [[self view] addSubview:_lockboxTable];
+    
+    lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
+    unlockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
 }
 
 -(NSString *)checkIfPINExists
@@ -101,7 +114,6 @@ UINavigationController *lockScreenNav;
 {
     [super viewDidAppear:animated];
     if([(AppDelegate *)[[UIApplication sharedApplication] delegate] appState] == locked) {
-        NSLog(@"TRIGGERED");
         [lockScreen presentFromViewController:self animated:YES];
     }
 }
@@ -130,6 +142,40 @@ UINavigationController *lockScreenNav;
        [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
        [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
    }
+}
+
+-(void)changePIN
+{
+    GCPINViewController *verifyPin = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeVerify];
+    verifyPin.messageText = @"Please verify current passcode";
+    verifyPin.title = @"Enter passcode";
+    verifyPin.errorText = @"Passcode is incorrect";
+    [verifyPin setIsChangingPIN:YES];
+    verifyPin.verifyBlock = ^(NSString *code){
+        NSString *PIN = [self checkIfPINExists];
+        return [code isEqualToString:PIN];
+    };
+    
+    [verifyPin presentFromViewController:self animated:YES];
+}
+
+-(void)presentChangePinViewController:(NSNotification *)notif
+{
+    GCPINViewController *changePin = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeCreate];
+    changePin.messageText = @"Please set your passcode";
+    changePin.title = @"Set passcode";
+    changePin.errorText = @"Passcodes do not match";
+    changePin.verifyBlock = ^(NSString *code){
+        NSLog(@"Code set:%@", code);
+        [(AppDelegate *)[[UIApplication sharedApplication] delegate] setAppState:unlocked];
+        NSError *error = nil;
+        [SFHFKeychainUtils storeUsername:USERNAME andPassword:code forServiceName:APPSERVICE updateExisting:YES error:&error];
+        if(error) {
+            NSLog(@"Error saving new passcode in keychain: %@", [error description]);
+        }
+        return YES;
+    };
+    [changePin presentFromViewController:self animated:YES];
 }
 
 #pragma mark - UITableView methods
@@ -169,6 +215,14 @@ UINavigationController *lockScreenNav;
     if([indexPath section] == 0)
     {
         [[cell textLabel] setText:[[_lockboxes objectAtIndex:[indexPath row]] name]];
+        if([[_lockboxes objectAtIndex:[indexPath row]] isLocked])
+        {
+            [cell setAccessoryView:lockedAccessoryView];
+        }
+        else
+        {
+            [cell setAccessoryView:unlockedAccessoryView];
+        }
     }
     else
     {
@@ -181,13 +235,14 @@ UINavigationController *lockScreenNav;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
     if([indexPath section] == 0)
     {
         
     }
     else
     {
-        
+        [self changePIN];
     }
 }
 

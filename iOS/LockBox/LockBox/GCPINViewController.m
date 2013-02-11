@@ -64,6 +64,7 @@
          object:nil];
         self.mode = mode;
         __dismiss = NO;
+        [self setIsChangingPIN:NO];
 	}
 	return self;
 }
@@ -121,7 +122,14 @@
     __dismiss = YES;
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, kGCPINViewControllerDelay * NSEC_PER_SEC);
     dispatch_after(time, dispatch_get_main_queue(), ^(void){
-        [self dismissViewControllerAnimated:YES completion:0];
+        [self dismissViewControllerAnimated:YES completion:^{
+            if([self isChangingPIN])
+            {
+                [self setIsChangingPIN:NO];
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"PresentChangePinViewControllerNotification" object:nil];
+            }
+        }];
+        
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
     });
 }

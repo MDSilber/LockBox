@@ -28,6 +28,8 @@
 		2896C15F16C6274400A744CA /* GCPINViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2896C15A16C6274400A744CA /* GCPINViewController~iphone.xib */; };
 		2896C16016C6274400A744CA /* PINBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 2896C15B16C6274400A744CA /* PINBox.png */; };
 		2896C16116C6274400A744CA /* PINBox@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2896C15C16C6274400A744CA /* PINBox@2x.png */; };
+		289D517F16C8750200AEC353 /* unlocked.png in Resources */ = {isa = PBXBuildFile; fileRef = 289D517D16C8750200AEC353 /* unlocked.png */; };
+		289D518016C8750200AEC353 /* locked.png in Resources */ = {isa = PBXBuildFile; fileRef = 289D517E16C8750200AEC353 /* locked.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +63,8 @@
 		2896C15A16C6274400A744CA /* GCPINViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "GCPINViewController~iphone.xib"; sourceTree = "<group>"; };
 		2896C15B16C6274400A744CA /* PINBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PINBox.png; sourceTree = "<group>"; };
 		2896C15C16C6274400A744CA /* PINBox@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PINBox@2x.png"; sourceTree = "<group>"; };
+		289D517D16C8750200AEC353 /* unlocked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = unlocked.png; sourceTree = "<group>"; };
+		289D517E16C8750200AEC353 /* locked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = locked.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +125,8 @@
 				2841A5F116C1E4C0001B6F10 /* LockBoxListViewController.m */,
 				280C30F016C6FF67008E572D /* LockboxTableViewCell.h */,
 				280C30F116C6FF67008E572D /* LockboxTableViewCell.m */,
+				289D517D16C8750200AEC353 /* unlocked.png */,
+				289D517E16C8750200AEC353 /* locked.png */,
 				28023B5F16C0D9EE004C9E8A /* Supporting Files */,
 			);
 			path = LockBox;
@@ -214,6 +220,8 @@
 				2896C15F16C6274400A744CA /* GCPINViewController~iphone.xib in Resources */,
 				2896C16016C6274400A744CA /* PINBox.png in Resources */,
 				2896C16116C6274400A744CA /* PINBox@2x.png in Resources */,
+				289D517F16C8750200AEC353 /* unlocked.png in Resources */,
+				289D518016C8750200AEC353 /* locked.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
