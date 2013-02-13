@@ -8,14 +8,14 @@
 
 #import "AddLockboxViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "LockBox.h"
 
 @interface AddLockboxViewController ()
 -(void)saveNewLockbox:(id)sender;
 @end
 
-#define ValidIPAddressRegex = @"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
-
 UITextField *lockBoxName, *lockBoxIPAddress;
+UILabel *nameLabel, *IPLabel;
 
 @implementation AddLockboxViewController
 
@@ -23,19 +23,31 @@ UITextField *lockBoxName, *lockBoxIPAddress;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        lockBoxName = [[UITextField alloc] initWithFrame:CGRectMake(50, 100, 220, 30)];
+        nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 20, 220, 30)];
+        [nameLabel setText:@"Lockbox Name"];
+        [nameLabel setBackgroundColor:[UIColor clearColor]];
+        
+        lockBoxName = [[UITextField alloc] initWithFrame:CGRectMake(50, 50, 220, 30)];
         [lockBoxName setBackgroundColor:[UIColor whiteColor]];
         [[lockBoxName layer] setCornerRadius:7.0];
         [[lockBoxName layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
         [[lockBoxName layer] setBorderWidth:1.0];
-        [lockBoxName setPlaceholder:@"Name, e.g. Home door"];
+        [lockBoxName setClearButtonMode:UITextFieldViewModeWhileEditing];
+        [lockBoxName setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [lockBoxName setPlaceholder:@" e.g. Home door"];
         
-        lockBoxIPAddress = [[UITextField alloc] initWithFrame:CGRectMake(50, 200, 220, 30)];
+        IPLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 100, 220, 30)];
+        [IPLabel setText:@"Lockbox IP Address"];
+        [IPLabel setBackgroundColor:[UIColor clearColor]];
+        
+        lockBoxIPAddress = [[UITextField alloc] initWithFrame:CGRectMake(50, 130, 220, 30)];
         [lockBoxIPAddress setBackgroundColor:[UIColor whiteColor]];
         [[lockBoxIPAddress layer] setCornerRadius:7.0];
         [[lockBoxIPAddress layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
         [[lockBoxIPAddress layer] setBorderWidth:1.0];
-        [lockBoxIPAddress setPlaceholder:@"IP Address e.g. 192.168.153.132"];
+        [lockBoxIPAddress setClearButtonMode:UITextFieldViewModeWhileEditing];
+        [lockBoxIPAddress setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [lockBoxIPAddress setPlaceholder:@" e.g. 192.168.153.132"];
     }
     return self;
 }
@@ -45,7 +57,9 @@ UITextField *lockBoxName, *lockBoxIPAddress;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     [[self view] setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
+    [[self view] addSubview:nameLabel];
     [[self view] addSubview:lockBoxName];
+    [[self view] addSubview:IPLabel];
     [[self view] addSubview:lockBoxIPAddress];
     
     UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveNewLockbox:)];
@@ -60,6 +74,34 @@ UITextField *lockBoxName, *lockBoxIPAddress;
 
 -(void)saveNewLockbox:(id)sender
 {
+    if([[lockBoxName text] length] == 0)
+    {
+        UIAlertView *noNameAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a name for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [noNameAlert show];
+        return;
+    }
+    
+    if([[lockBoxIPAddress text] length] < 7 || [[lockBoxIPAddress text] length] > 15)
+    {
+        UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [invalidIPAlert show];
+        return;
+    }
+    
+    if([self stringisValidIPAddress:[lockBoxIPAddress text]])
+    {
+        UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [invalidIPAlert show];
+        return;
+    }
     
 }
+
+-(BOOL)stringisValidIPAddress:(NSString *)IPAddress
+{
+    NSString *IPAddressRegex = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
+    NSPredicate *IPAddressTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", IPAddressRegex];
+    return [IPAddressTest evaluateWithObject:IPAddress];
+}
+
 @end
