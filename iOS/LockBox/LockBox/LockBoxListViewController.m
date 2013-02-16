@@ -93,6 +93,10 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     
     lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
     unlockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self loadLockboxes];
+    });
 }
 
 -(NSString *)checkIfPINExists
@@ -123,6 +127,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 -(void)addLockbox:(id)sender
 {
     AddLockboxViewController *addLockbox = [[AddLockboxViewController alloc] init];
+    [addLockbox setDelegate:self];
     [addLockbox setTitle:@"Add Lockbox"];
     [[self navigationController] pushViewController:addLockbox animated:YES];
 }
@@ -158,13 +163,14 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [verifyPin presentFromViewController:self animated:YES];
 }
 
--(void)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
+-(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
 {
-    NSManagedObjectContext *context = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
-    LockBox *newLockbox = [NSEntityDescription insertNewObjectForEntityForName:@"LockBox" inManagedObjectContext:context];
+    NSLog(@"Delegate called");
+    LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]] insertIntoManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]];
     [newLockbox setName:name];
-    [newLockbox setIPAddress:IPAddress];
+    [newLockbox setIpAddress:IPAddress];
     [newLockbox setIsLocked:@1];
+    NSManagedObjectContext *context = [newLockbox managedObjectContext];
     
     NSError *error = nil;
     
@@ -173,13 +179,34 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         NSLog(@"Error saving new lockbox: %@", [error description]);
         UIAlertView *errorSavingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error saving your new lockbox. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [errorSavingAlert show];
+        return NO;
     }
     else
     {
-        [self dismissViewControllerAnimated:YES completion:^
-        {
-            [[self lockboxTable] reloadData];
-        }];
+        return YES;
+    }
+}
+
+-(void)loadLockboxes
+{
+    NSManagedObjectContext *managedObjectContext = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:managedObjectContext];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:entityDescription];
+    
+    NSError *error = nil;
+    NSArray *temp = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    if(error)
+    {
+        NSLog(@"Error fetching lockboxes: %@", [error description]);
+    }
+    else
+    {
+        _lockboxes = [[NSMutableArray alloc] initWithArray:temp];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_lockboxTable reloadData];
+        });
     }
 }
 
@@ -243,7 +270,19 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
     if([indexPath section] == 0)
     {
-        
+        LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
+        if([[selectedLockbox isLocked] intValue])
+        {
+            NSLog(@"Unlocking");
+            [selectedLockbox setIsLocked:@0];
+            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
+        }
+        else
+        {
+            NSLog(@"Locking");
+            [selectedLockbox setIsLocked:@1];
+            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
+        }
     }
     else
     {

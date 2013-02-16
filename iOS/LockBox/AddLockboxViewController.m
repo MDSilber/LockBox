@@ -81,7 +81,13 @@ UILabel *nameLabel, *IPLabel;
     if(![self validateLockboxFields])
         return;
     else
-        [[self delegate] saveNewLockboxWithName:[lockBoxName text] andIPAddress:[lockBoxIPAddress text]];
+    {
+        if([[self delegate] saveNewLockboxWithName:[lockBoxName text] andIPAddress:[lockBoxIPAddress text]])
+        {
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+        else return;
+    }
 }
 
 -(BOOL)validateLockboxFields

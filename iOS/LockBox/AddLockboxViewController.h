@@ -10,7 +10,7 @@
 
 @protocol AddLockboxDelegate
 @required
--(void)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+-(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress;
 @end
 
 @interface AddLockboxViewController : UIViewController

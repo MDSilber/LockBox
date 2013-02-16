@@ -45,5 +45,6 @@
 -(void)addLockbox:(id)sender;
 -(void)editLockboxes:(id)sender;
 -(void)changePIN;
+-(void)loadLockboxes;
 
 @end
