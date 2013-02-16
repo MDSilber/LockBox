@@ -12,6 +12,7 @@
 #import "LockboxTableViewCell.h"
 #import "SFHFKeychainUtils.h"
 #import "AddLockboxViewController.h"
+#import "LockBox.h"
 
 @interface LockBoxListViewController ()
 
@@ -155,6 +156,31 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     };
     
     [verifyPin presentFromViewController:self animated:YES];
+}
+
+-(void)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
+{
+    NSManagedObjectContext *context = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    LockBox *newLockbox = [NSEntityDescription insertNewObjectForEntityForName:@"LockBox" inManagedObjectContext:context];
+    [newLockbox setName:name];
+    [newLockbox setIPAddress:IPAddress];
+    [newLockbox setIsLocked:@1];
+    
+    NSError *error = nil;
+    
+    if(![context save:&error])
+    {
+        NSLog(@"Error saving new lockbox: %@", [error description]);
+        UIAlertView *errorSavingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error saving your new lockbox. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [errorSavingAlert show];
+    }
+    else
+    {
+        [self dismissViewControllerAnimated:YES completion:^
+        {
+            [[self lockboxTable] reloadData];
+        }];
+    }
 }
 
 #pragma mark - UITableView methods

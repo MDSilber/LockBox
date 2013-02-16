@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "LockBox.h"
+#import "AddLockboxViewController.h"
 
 @interface UIColor (UITableViewBackground)
 + (UIColor *)groupTableViewBackgroundColor;
@@ -36,7 +36,7 @@
 
 @end
 
-@interface LockBoxListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface LockBoxListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, AddLockboxDelegate>
 
 @property (nonatomic, strong) UITableView *lockboxTable;
 @property (nonatomic, strong) NSMutableArray *lockboxes;

@@ -13,7 +13,7 @@
 @interface LockBox : NSManagedObject
 
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSString * ipAddress;
+@property (nonatomic, retain) NSString * IPAddress;
 @property (nonatomic, retain) NSNumber * isLocked;
 
 @end

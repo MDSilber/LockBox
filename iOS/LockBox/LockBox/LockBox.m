@@ -12,7 +12,7 @@
 @implementation LockBox
 
 @dynamic name;
-@dynamic ipAddress;
+@dynamic IPAddress;
 @dynamic isLocked;
 
 -(id)init

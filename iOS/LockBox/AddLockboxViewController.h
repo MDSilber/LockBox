@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AddLockboxDelegate
+@required
+-(void)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+@end
+
 @interface AddLockboxViewController : UIViewController
+@property (nonatomic, strong) id<AddLockboxDelegate> delegate;
 
 @end

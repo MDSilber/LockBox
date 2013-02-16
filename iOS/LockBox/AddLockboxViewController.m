@@ -8,10 +8,14 @@
 
 #import "AddLockboxViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "LockBox.h"
+#import "AppDelegate.h"
 
 @interface AddLockboxViewController ()
+
 -(void)saveNewLockbox:(id)sender;
+-(BOOL)validateLockboxFields;
+-(BOOL)stringisValidIPAddress:(NSString *)IPAddress;
+
 @end
 
 UITextField *lockBoxName, *lockBoxIPAddress;
@@ -74,27 +78,36 @@ UILabel *nameLabel, *IPLabel;
 
 -(void)saveNewLockbox:(id)sender
 {
+    if(![self validateLockboxFields])
+        return;
+    else
+        [[self delegate] saveNewLockboxWithName:[lockBoxName text] andIPAddress:[lockBoxIPAddress text]];
+}
+
+-(BOOL)validateLockboxFields
+{
     if([[lockBoxName text] length] == 0)
     {
         UIAlertView *noNameAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a name for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [noNameAlert show];
-        return;
+        return NO;
     }
     
     if([[lockBoxIPAddress text] length] < 7 || [[lockBoxIPAddress text] length] > 15)
     {
         UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [invalidIPAlert show];
-        return;
+        return NO;
     }
     
     if([self stringisValidIPAddress:[lockBoxIPAddress text]])
     {
         UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [invalidIPAlert show];
-        return;
+        return NO;
     }
     
+    return YES;
 }
 
 -(BOOL)stringisValidIPAddress:(NSString *)IPAddress
