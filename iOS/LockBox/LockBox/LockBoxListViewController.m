@@ -13,6 +13,7 @@
 #import "SFHFKeychainUtils.h"
 #import "AddLockboxViewController.h"
 #import "LockBox.h"
+#import "AFNetworking.h"
 
 @interface LockBoxListViewController ()
 
@@ -210,6 +211,23 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     }
 }
 
+-(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure
+{
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
+    NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
+    
+    //Handles putting networking in the background
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
+        success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
+            success();
+        }
+        failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
+            NSLog(@"Error locking lockbox: %@", [error description]);
+            failure();
+        }];
+    [operation start];
+}
+
 #pragma mark - UITableView methods
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -271,7 +289,8 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     if([indexPath section] == 0)
     {
         LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
-        if([[selectedLockbox isLocked] intValue])
+        if([[selectedLockbox isLocked] intValue]
+        )
         {
             NSLog(@"Unlocking");
             [selectedLockbox setIsLocked:@0];
