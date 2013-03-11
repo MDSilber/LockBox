@@ -33,6 +33,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [[self lockboxTable] setDataSource:nil];
 }
 
+#pragma mark - View lifecycle methods
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -104,18 +105,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     });
 }
 
--(NSString *)checkIfPINExists
-{
-    NSError *error = nil;
-    
-    NSString *pin = [SFHFKeychainUtils getPasswordForUsername:USERNAME andServiceName:APPSERVICE error:&error];
-    if(error)
-    {
-        return nil;
-    }
-    return pin;
-}
-
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -128,6 +117,20 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Lockbox methods
+
+-(NSString *)checkIfPINExists
+{
+    NSError *error = nil;
+    
+    NSString *pin = [SFHFKeychainUtils getPasswordForUsername:USERNAME andServiceName:APPSERVICE error:&error];
+    if(error)
+    {
+        return nil;
+    }
+    return pin;
 }
 
 -(void)addLockbox:(id)sender
@@ -178,57 +181,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [verifyPin presentFromViewController:self animated:YES];
 }
 
--(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
-{
-    NSLog(@"Delegate called");
-    LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]] insertIntoManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]];
-    [newLockbox setName:name];
-    [newLockbox setIpAddress:IPAddress];
-    [newLockbox setIsLocked:@1];
-    NSManagedObjectContext *context = [newLockbox managedObjectContext];
-    
-    NSError *error = nil;
-    
-    if(![context save:&error])
-    {
-        NSLog(@"Error saving new lockbox: %@", [error description]);
-        UIAlertView *errorSavingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error saving your new lockbox. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [errorSavingAlert show];
-        return NO;
-    }
-    else
-    {
-        [_lockboxes addObject:newLockbox];
-        [[[self navigationItem] leftBarButtonItem] setEnabled:YES];
-        [_lockboxTable reloadData];
-        return YES;
-    }
-}
-
--(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress;
-{
-    [_lockboxTable setEditing:NO animated:YES];
-    [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
-    [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
-    NSManagedObjectContext *context = [lockbox managedObjectContext];
-    
-    [lockbox setName:name];
-    [lockbox setIpAddress:IPAddress];
-    
-    NSError *error = nil;
-    if(![context save:&error])
-    {
-        NSLog(@"Error editing new lockbox: %@", [error description]);
-        UIAlertView *errorEditingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error editing your lockbox information. Please try again." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [errorEditingAlert show];
-        return NO;
-    }
-    else
-    {
-        [_lockboxTable reloadData];
-        return YES;
-    }
-}
 
 -(void)loadLockboxes
 {
@@ -304,7 +256,61 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [operation start];
 }
 
-#pragma mark - UITableView methods
+#pragma mark - AddLockboxViewControllerDelegate methods
+
+-(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
+{
+    NSLog(@"Delegate called");
+    LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]] insertIntoManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]];
+    [newLockbox setName:name];
+    [newLockbox setIpAddress:IPAddress];
+    [newLockbox setIsLocked:@1];
+    NSManagedObjectContext *context = [newLockbox managedObjectContext];
+    
+    NSError *error = nil;
+    
+    if(![context save:&error])
+    {
+        NSLog(@"Error saving new lockbox: %@", [error description]);
+        UIAlertView *errorSavingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error saving your new lockbox. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [errorSavingAlert show];
+        return NO;
+    }
+    else
+    {
+        [_lockboxes addObject:newLockbox];
+        [[[self navigationItem] leftBarButtonItem] setEnabled:YES];
+        [_lockboxTable reloadData];
+        return YES;
+    }
+}
+
+-(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+{
+    [_lockboxTable setEditing:NO animated:YES];
+    [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
+    [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+    NSManagedObjectContext *context = [lockbox managedObjectContext];
+    
+    [lockbox setName:name];
+    [lockbox setIpAddress:IPAddress];
+    
+    NSError *error = nil;
+    if(![context save:&error])
+    {
+        NSLog(@"Error editing new lockbox: %@", [error description]);
+        UIAlertView *errorEditingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error editing your lockbox information. Please try again." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [errorEditingAlert show];
+        return NO;
+    }
+    else
+    {
+        [_lockboxTable reloadData];
+        return YES;
+    }
+}
+
+#pragma mark - UITableViewDelegate and UITableViewDataSource methods
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
