@@ -25,7 +25,32 @@
 
 @end
 
+@interface UIColor (UITableViewBackground)
++ (UIColor *)groupTableViewBackgroundColor;
+@end
 
+@implementation UIColor (UITableViewBackground)
+
++ (UIColor *)groupTableViewBackgroundColor
+{
+    __strong static UIImage* tableViewBackgroundImage = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(7.f, 1.f), NO, 0.0);
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        [[self colorWithRed:185/255.f green:192/255.f blue:202/255.f alpha:1.f] setFill];
+        CGContextFillRect(c, CGRectMake(0, 0, 4, 1));
+        [[self colorWithRed:185/255.f green:193/255.f blue:200/255.f alpha:1.f] setFill];
+        CGContextFillRect(c, CGRectMake(4, 0, 1, 1));
+        [[self colorWithRed:192/255.f green:200/255.f blue:207/255.f alpha:1.f] setFill];
+        CGContextFillRect(c, CGRectMake(5, 0, 2, 1));
+        tableViewBackgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    });
+    return [self colorWithPatternImage:tableViewBackgroundImage];
+}
+
+@end
 
 @implementation LockBoxListViewController
 
@@ -483,27 +508,16 @@
 
 -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
+    //Do not allow movement between sections
+    if([sourceIndexPath section] != [destinationIndexPath section])
+    {
+        return;
+        
+    }
+    
     LockBox *movingLockbox = [_lockboxes objectAtIndex:[sourceIndexPath row]];
-    
-    //Moving down
-    if (destinationIndexPath > sourceIndexPath)
-    {
-        for(int i = [destinationIndexPath row]; i > [sourceIndexPath row]; i++)
-        {
-            [_lockboxes replaceObjectAtIndex:(i-1) withObject:[_lockboxes objectAtIndex:i]];
-        }
-    }
-    //Moving up
-    else
-    {
-        for(int i = [destinationIndexPath row]; i < [sourceIndexPath row]; i--)
-        {
-            [_lockboxes replaceObjectAtIndex:(i+1) withObject:[_lockboxes objectAtIndex:i]];
-        }
-    }
-    
-    [_lockboxes replaceObjectAtIndex:[destinationIndexPath row] withObject:movingLockbox];
-    [_lockboxTable reloadData];
+    [_lockboxes removeObject:movingLockbox];
+    [_lockboxes insertObject:movingLockbox atIndex:[destinationIndexPath row]];
 }
 
 @end
