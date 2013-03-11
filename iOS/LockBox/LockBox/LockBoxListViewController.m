@@ -19,7 +19,6 @@
 
 @property (nonatomic, strong) GCPINViewController *lockScreen;
 @property (nonatomic, strong) UINavigationController *lockScreenNav;
-@property (nonatomic, strong) UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath;
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath: (NSIndexPath *)indexPath;
@@ -100,12 +99,9 @@
     
     [[self view] addSubview:_lockboxTable];
     
-    _lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
-    _unlockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadLockboxes];
-    });
+//    });
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -203,17 +199,15 @@
     {
         _lockboxes = [[NSMutableArray alloc] initWithArray:temp];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_lockboxTable reloadData];
-            UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
-            [[self navigationItem] setRightBarButtonItem:addLockbox];
-            UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
-            [[self navigationItem] setLeftBarButtonItem:editLockboxes];
-            if([_lockboxes count] == 0)
-            {
-                [editLockboxes setEnabled:NO];
-            }
-        });
+        [_lockboxTable reloadData];
+        UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
+        [[self navigationItem] setRightBarButtonItem:addLockbox];
+        UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
+        [[self navigationItem] setLeftBarButtonItem:editLockboxes];
+        if([_lockboxes count] == 0)
+        {
+            [editLockboxes setEnabled:NO];
+        }
     }
 }
 
@@ -226,7 +220,7 @@
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
-                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:_lockedAccessoryView];
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:[self newLockedImageView]];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -247,7 +241,7 @@
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
-                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:_unlockedAccessoryView];
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:[self newUnlockedImageView]];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -264,11 +258,11 @@
 -(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
 {
     NSLog(@"Delegate called");
-    LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]] insertIntoManagedObjectContext:[(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext]];
+    NSManagedObjectContext *context = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     [newLockbox setName:name];
     [newLockbox setIpAddress:IPAddress];
     [newLockbox setIsLocked:@1];
-    NSManagedObjectContext *context = [newLockbox managedObjectContext];
     
     NSError *error = nil;
     
@@ -313,6 +307,16 @@
     }
 }
 
+- (UIImageView *)newLockedImageView
+{
+    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
+}
+
+- (UIImageView *)newUnlockedImageView
+{
+    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
+}
+
 #pragma mark - UITableViewDelegate and UITableViewDataSource methods
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -352,11 +356,11 @@
         [[cell textLabel] setText:[[_lockboxes objectAtIndex:[indexPath row]] name]];
         if([[_lockboxes objectAtIndex:[indexPath row]] isLocked])
         {
-            [cell setAccessoryView:_lockedAccessoryView];
+            [cell setAccessoryView:[self newLockedImageView]];
         }
         else
         {
-            [cell setAccessoryView:_unlockedAccessoryView];
+            [cell setAccessoryView:[self newUnlockedImageView]];
         }
     }
     else

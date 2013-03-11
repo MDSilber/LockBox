@@ -17,7 +17,7 @@
 @end
 
 @interface AddLockboxViewController : UIViewController
-@property (nonatomic, strong) id<AddLockboxDelegate> delegate;
+@property (nonatomic, weak) id<AddLockboxDelegate> delegate;
 
 -(id)initWithLockbox:(LockBox *)lockbox;
 
