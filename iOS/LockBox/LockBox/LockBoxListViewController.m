@@ -142,12 +142,14 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         NSLog(@"Editing");
         [[[self navigationItem] leftBarButtonItem] setTitle:@"Done"];
         [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleDone];
+        [_lockboxTable setEditing:YES animated:YES];
     }
     else
     {
         NSLog(@"Not Editing");
         [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
         [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+        [_lockboxTable setEditing:NO animated:YES];
     }
 }
 
@@ -335,6 +337,18 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     else
     {
         [self changePIN];
+    }
+}
+
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([tableView isEditing])
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
     }
 }
 
