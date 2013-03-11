@@ -35,6 +35,7 @@ void lock();
 void unlock();
 void httpResponseOK();
 void httpResponseBadRequest();
+int isConnected();
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -190,6 +191,4 @@ void httpResponseBadRequest()
   client.println("<!DOCTYPE HTML>");  
   client.println("<html><body><h1>400 Bad Request<h1></body></html>");
 }
-
-
 

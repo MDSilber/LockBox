@@ -16,6 +16,8 @@
 #import "AFNetworking.h"
 
 @interface LockBoxListViewController ()
+-(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure;
+-(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure;
 
 @end
 
@@ -68,7 +70,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
         [[self navigationItem] setRightBarButtonItem:addLockbox];
         UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
-        [[self navigationItem] setLeftBarButtonItem:editLockboxes];        
+        [[self navigationItem] setLeftBarButtonItem:editLockboxes];
     }
     return self;
 }
@@ -135,18 +137,18 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)editLockboxes:(id)sender
 {
-   if([[[[self navigationItem] leftBarButtonItem] title] isEqualToString:@"Edit"])
-   {
-       NSLog(@"Editing");
-       [[[self navigationItem] leftBarButtonItem] setTitle:@"Done"];
-       [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleDone];
-   }
-   else
-   {
-       NSLog(@"Not Editing");
-       [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
-       [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
-   }
+    if([[[[self navigationItem] leftBarButtonItem] title] isEqualToString:@"Edit"])
+    {
+        NSLog(@"Editing");
+        [[[self navigationItem] leftBarButtonItem] setTitle:@"Done"];
+        [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleDone];
+    }
+    else
+    {
+        NSLog(@"Not Editing");
+        [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
+        [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+    }
 }
 
 -(void)changePIN
@@ -213,18 +215,41 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure
 {
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
+    //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$1", [lockbox ipAddress]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
-        success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
-            success();
-        }
-        failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
-            NSLog(@"Error locking lockbox: %@", [error description]);
-            failure();
-        }];
+                                                                                        success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
+                                                                                            if(success != 0)
+                                                                                                success();
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
+                                                                                            NSLog(@"Error locking lockbox: %@", [error description]);
+                                                                                            if(failure != 0)
+                                                                                                failure();
+                                                                                        }];
+    [operation start];
+}
+
+-(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure
+{
+    //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$2", [lockbox ipAddress]]];
+    NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
+    
+    //Handles putting networking in the background
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
+                                                                                        success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
+                                                                                            if(success != 0)
+                                                                                                success();
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
+                                                                                            NSLog(@"Error unlocking lockbox: %@", [error description]);
+                                                                                            if(success != 0)
+                                                                                                success();
+                                                                                        }];
     [operation start];
 }
 
@@ -290,17 +315,19 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     {
         LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
         if([[selectedLockbox isLocked] intValue]
-        )
+           )
         {
             NSLog(@"Unlocking");
             [selectedLockbox setIsLocked:@0];
             [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
+            [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0];
         }
         else
         {
             NSLog(@"Locking");
             [selectedLockbox setIsLocked:@1];
             [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
+            [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0];
         }
     }
     else
