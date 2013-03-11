@@ -3,9 +3,10 @@
     <entity name="LockBox" representedClassName="LockBox" syncable="YES">
         <attribute name="ipAddress" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isLocked" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="lockboxNumber" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="LockBox" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="LockBox" positionX="0" positionY="0" width="128" height="105"/>
     </elements>
 </model>

@@ -19,6 +19,17 @@
 
 @property (nonatomic, strong) GCPINViewController *lockScreen;
 @property (nonatomic, strong) UINavigationController *lockScreenNav;
+//Checks if order needs to be recalculated and saved into Core Data
+@property BOOL editMade;
+
+-(NSString *)checkIfPINExists;
+-(void)addLockbox:(id)sender;
+-(void)editLockboxes:(id)sender;
+-(void)changePIN;
+-(void)loadLockboxes;
+-(void)recalculateLockboxNumbers;
+-(UIImageView *)newLockedImageView;
+-(UIImageView *)newUnlockedImageView;
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath;
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath: (NSIndexPath *)indexPath;
@@ -94,6 +105,7 @@
             }];
         }
         _lockScreenNav = [[UINavigationController alloc] initWithRootViewController:_lockScreen];
+        _editMade = NO;
     }
     return self;
 }
@@ -186,6 +198,11 @@
             [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
             [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
             [_lockboxTable setEditing:NO animated:YES];
+            if(_editMade)
+            {
+                _editMade = NO;
+                [self recalculateLockboxNumbers];
+            }
         }
     }
 }
@@ -205,12 +222,13 @@
     [verifyPin presentFromViewController:self animated:YES];
 }
 
-
 -(void)loadLockboxes
 {
     NSManagedObjectContext *managedObjectContext = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
     NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:managedObjectContext];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"lockboxNumber" ascending:YES];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
     [fetchRequest setEntity:entityDescription];
     
     NSError *error = nil;
@@ -278,6 +296,35 @@
     [operation start];
 }
 
+-(void)recalculateLockboxNumbers
+{
+    for(int i = 0; i < [_lockboxes count]; i++)
+    {
+        if(![[[_lockboxes objectAtIndex:i] lockboxNumber]isEqualToNumber:[NSNumber numberWithInt:i]])
+        {
+            [[_lockboxes objectAtIndex:i] setLockboxNumber:[NSNumber numberWithInt:i]];
+        }
+    }
+    
+    NSManagedObjectContext *managedObjectContext = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    
+    NSError *error = nil;
+    if(![managedObjectContext save:&error])
+    {
+        NSLog(@"Error storing order of lockboxes: %@", [error description]);
+    }
+}
+
+- (UIImageView *)newLockedImageView
+{
+    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
+}
+
+- (UIImageView *)newUnlockedImageView
+{
+    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
+}
+
 #pragma mark - AddLockboxViewControllerDelegate methods
 
 -(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
@@ -288,6 +335,7 @@
     [newLockbox setName:name];
     [newLockbox setIpAddress:IPAddress];
     [newLockbox setIsLocked:@1];
+    [newLockbox setLockboxNumber:[NSNumber numberWithInt:[_lockboxes count]]];
     
     NSError *error = nil;
     
@@ -330,16 +378,6 @@
         [_lockboxTable reloadData];
         return YES;
     }
-}
-
-- (UIImageView *)newLockedImageView
-{
-    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
-}
-
-- (UIImageView *)newUnlockedImageView
-{
-    return [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
 }
 
 #pragma mark - UITableViewDelegate and UITableViewDataSource methods
@@ -484,6 +522,8 @@
         //Update data source
         [_lockboxes removeObjectAtIndex:[indexPath row]];
         
+        _editMade = YES;
+        
         if([_lockboxes count] == 0)
         {
             [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
@@ -508,11 +548,11 @@
 
 -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
+    _editMade = YES;
     //Do not allow movement between sections
     if([sourceIndexPath section] != [destinationIndexPath section])
     {
         return;
-        
     }
     
     LockBox *movingLockbox = [_lockboxes objectAtIndex:[sourceIndexPath row]];

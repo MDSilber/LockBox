@@ -2,7 +2,7 @@
 //  LockBox.m
 //  LockBox
 //
-//  Created by Mason Silber on 2/16/13.
+//  Created by Mason Silber on 3/11/13.
 //  Copyright (c) 2013 Mason Silber. All rights reserved.
 //
 
@@ -14,6 +14,7 @@
 @dynamic ipAddress;
 @dynamic isLocked;
 @dynamic name;
+@dynamic lockboxNumber;
 
 -(id)init
 {

@@ -2,7 +2,7 @@
 //  LockBox.h
 //  LockBox
 //
-//  Created by Mason Silber on 2/16/13.
+//  Created by Mason Silber on 3/11/13.
 //  Copyright (c) 2013 Mason Silber. All rights reserved.
 //
 
@@ -15,5 +15,6 @@
 @property (nonatomic, retain) NSString * ipAddress;
 @property (nonatomic, retain) NSNumber * isLocked;
 @property (nonatomic, retain) NSString * name;
+@property (nonatomic, retain) NSNumber * lockboxNumber;
 
 @end
