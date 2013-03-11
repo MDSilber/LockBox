@@ -16,14 +16,17 @@
 #import "AFNetworking.h"
 
 @interface LockBoxListViewController ()
+
+@property (nonatomic, strong) GCPINViewController *lockScreen;
+@property (nonatomic, strong) UINavigationController *lockScreenNav;
+@property (nonatomic, strong) UIImageView *lockedAccessoryView, *unlockedAccessoryView;
+
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath;
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath: (NSIndexPath *)indexPath;
 
 @end
 
-GCPINViewController *lockScreen;
-UINavigationController *lockScreenNav;
-UIImageView *lockedAccessoryView, *unlockedAccessoryView;
+
 
 @implementation LockBoxListViewController
 
@@ -40,11 +43,11 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     if (self) {
         NSString *PIN = [self checkIfPINExists];
         if(!PIN) {
-            lockScreen = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeCreate];
-            lockScreen.messageText = @"Please set your passcode";
-            lockScreen.title = @"Set passcode";
-            lockScreen.errorText = @"Passcodes do not match";
-            lockScreen.verifyBlock = ^(NSString *code){
+            _lockScreen = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeCreate];
+            _lockScreen.messageText = @"Please set your passcode";
+            _lockScreen.title = @"Set passcode";
+            _lockScreen.errorText = @"Passcodes do not match";
+            _lockScreen.verifyBlock = ^(NSString *code){
                 NSLog(@"Code set:%@", code);
                 [(AppDelegate *)[[UIApplication sharedApplication] delegate] setAppState:unlocked];
                 NSError *error = nil;
@@ -57,16 +60,16 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         }
         else
         {
-            lockScreen = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeVerify];
-            [lockScreen setMessageText:@"Please enter your passcode"];
-            [lockScreen setTitle:@"Enter passcode"];
-            [lockScreen setErrorText:@"Passcode is incorrect"];
-            [lockScreen setVerifyBlock:^(NSString *code){
+            _lockScreen = [[GCPINViewController alloc] initWithNibName:nil bundle:nil mode:GCPINViewControllerModeVerify];
+            [_lockScreen setMessageText:@"Please enter your passcode"];
+            [_lockScreen setTitle:@"Enter passcode"];
+            [_lockScreen setErrorText:@"Passcode is incorrect"];
+            [_lockScreen setVerifyBlock:^(NSString *code){
                 [(AppDelegate *)[[UIApplication sharedApplication] delegate] setAppState:unlocked];
                 return [code isEqualToString:PIN];
             }];
         }
-        lockScreenNav = [[UINavigationController alloc] initWithRootViewController:lockScreen];
+        _lockScreenNav = [[UINavigationController alloc] initWithRootViewController:_lockScreen];
     }
     return self;
 }
@@ -97,8 +100,8 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     
     [[self view] addSubview:_lockboxTable];
     
-    lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
-    unlockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
+    _lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
+    _unlockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"unlocked.png"]];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadLockboxes];
@@ -109,7 +112,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 {
     [super viewDidAppear:animated];
     if([(AppDelegate *)[[UIApplication sharedApplication] delegate] appState] == locked) {
-        [lockScreen presentFromViewController:self animated:YES];
+        [_lockScreen presentFromViewController:self animated:YES];
     }
 }
 
@@ -223,7 +226,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
-                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:_lockedAccessoryView];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -244,7 +247,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
-                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:_unlockedAccessoryView];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -349,11 +352,11 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         [[cell textLabel] setText:[[_lockboxes objectAtIndex:[indexPath row]] name]];
         if([[_lockboxes objectAtIndex:[indexPath row]] isLocked])
         {
-            [cell setAccessoryView:lockedAccessoryView];
+            [cell setAccessoryView:_lockedAccessoryView];
         }
         else
         {
-            [cell setAccessoryView:unlockedAccessoryView];
+            [cell setAccessoryView:_unlockedAccessoryView];
         }
     }
     else
@@ -460,6 +463,43 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         }
     }
     [tableView endUpdates];
+}
+
+-(BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([indexPath section] == 0 && [_lockboxes count] > 1)
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+-(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
+{
+    LockBox *movingLockbox = [_lockboxes objectAtIndex:[sourceIndexPath row]];
+    
+    //Moving down
+    if (destinationIndexPath > sourceIndexPath)
+    {
+        for(int i = [destinationIndexPath row]; i > [sourceIndexPath row]; i++)
+        {
+            [_lockboxes replaceObjectAtIndex:(i-1) withObject:[_lockboxes objectAtIndex:i]];
+        }
+    }
+    //Moving up
+    else
+    {
+        for(int i = [destinationIndexPath row]; i < [sourceIndexPath row]; i--)
+        {
+            [_lockboxes replaceObjectAtIndex:(i+1) withObject:[_lockboxes objectAtIndex:i]];
+        }
+    }
+    
+    [_lockboxes replaceObjectAtIndex:[destinationIndexPath row] withObject:movingLockbox];
+    [_lockboxTable reloadData];
 }
 
 @end
