@@ -336,28 +336,41 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
-    if([indexPath section] == 0)
+    //Not in editing mode
+    if(![tableView isEditing])
     {
-        LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
-        if([[selectedLockbox isLocked] intValue]
-           )
+        //Lock or unlock lockbox
+        if([indexPath section] == 0)
         {
-            NSLog(@"Unlocking");
-            [selectedLockbox setIsLocked:@0];
-            //            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
-            [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
+            LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
+            if([[selectedLockbox isLocked] intValue]
+               )
+            {
+                NSLog(@"Unlocking");
+                [selectedLockbox setIsLocked:@0];
+                [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
+            }
+            else
+            {
+                NSLog(@"Locking");
+                [selectedLockbox setIsLocked:@1];
+                [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
+            }
         }
+        //Change pin
         else
         {
-            NSLog(@"Locking");
-            [selectedLockbox setIsLocked:@1];
-            //            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
-            [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
+            [self changePIN];
         }
     }
+    //In editing mode
     else
     {
-        [self changePIN];
+        //Edit a lockbox
+        if([indexPath section] == 0)
+        {
+            
+        }
     }
 }
 
@@ -376,12 +389,39 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView beginUpdates];
+
     if(editingStyle == UITableViewCellEditingStyleDelete)
     {
+        //Update core data
+        NSManagedObjectContext *managedObjectContext = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
+        LockBox *lockboxToDelete = [_lockboxes objectAtIndex:[indexPath row]];
+        [managedObjectContext deleteObject:lockboxToDelete];
+        NSError *error = nil;
+        
+        if(![managedObjectContext save:&error])
+        {
+            UIAlertView *deleteErrorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                       message:@"Error deleting lockbox. Please try again."
+                                                                      delegate:nil
+                                                             cancelButtonTitle:@"OK"
+                                                             otherButtonTitles:nil, nil];
+            [deleteErrorAlert show];
+            return;
+        }
+        
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        
         [tableView setEditing:NO animated:NO];
-        //Update data model
+        
+        //Update data source
         [_lockboxes removeObjectAtIndex:[indexPath row]];
+        
+        if([_lockboxes count] == 0)
+        {
+            [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
+            [[[self navigationItem] leftBarButtonItem] setEnabled:NO];
+            [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+        }
     }
     [tableView endUpdates];
 }
