@@ -16,8 +16,8 @@
 #import "AFNetworking.h"
 
 @interface LockBoxListViewController ()
--(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure;
--(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure;
+-(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath;
+-(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath: (NSIndexPath *)indexPath;
 
 @end
 
@@ -213,7 +213,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     }
 }
 
--(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure
+-(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
     //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
     NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$1", [lockbox ipAddress]]];
@@ -222,6 +222,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -233,7 +234,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [operation start];
 }
 
--(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure
+-(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
     //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
     NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$2", [lockbox ipAddress]]];
@@ -242,6 +243,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
+                                                                                            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
                                                                                             if(success != 0)
                                                                                                 success();
                                                                                         }
@@ -319,15 +321,15 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         {
             NSLog(@"Unlocking");
             [selectedLockbox setIsLocked:@0];
-            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
-            [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0];
+//            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
+            [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
         }
         else
         {
             NSLog(@"Locking");
             [selectedLockbox setIsLocked:@1];
-            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
-            [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0];
+//            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
+            [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
         }
     }
     else
