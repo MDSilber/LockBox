@@ -84,7 +84,7 @@ UILabel *nameLabel, *IPLabel;
     {
         if([[self delegate] saveNewLockboxWithName:[lockBoxName text] andIPAddress:[lockBoxIPAddress text]])
         {
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [[self navigationController] popViewControllerAnimated:YES];
         }
         else return;
     }

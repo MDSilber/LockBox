@@ -66,11 +66,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
             }];
         }
         lockScreenNav = [[UINavigationController alloc] initWithRootViewController:lockScreen];
-        
-        UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
-        [[self navigationItem] setRightBarButtonItem:addLockbox];
-        UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
-        [[self navigationItem] setLeftBarButtonItem:editLockboxes];
     }
     return self;
 }
@@ -79,6 +74,12 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     [self setView:view];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSLog(@"View will appear");
 }
 
 - (void)viewDidLoad
@@ -121,6 +122,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         [lockScreen presentFromViewController:self animated:YES];
     }
 }
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -137,19 +139,26 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)editLockboxes:(id)sender
 {
-    if([[[[self navigationItem] leftBarButtonItem] title] isEqualToString:@"Edit"])
+    if([_lockboxes count] == 0)
     {
-        NSLog(@"Editing");
-        [[[self navigationItem] leftBarButtonItem] setTitle:@"Done"];
-        [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleDone];
-        [_lockboxTable setEditing:YES animated:YES];
+        return;
     }
     else
     {
-        NSLog(@"Not Editing");
-        [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
-        [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
-        [_lockboxTable setEditing:NO animated:YES];
+        if([[[[self navigationItem] leftBarButtonItem] title] isEqualToString:@"Edit"])
+        {
+            NSLog(@"Editing");
+            [[[self navigationItem] leftBarButtonItem] setTitle:@"Done"];
+            [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleDone];
+            [_lockboxTable setEditing:YES animated:YES];
+        }
+        else
+        {
+            NSLog(@"Not Editing");
+            [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
+            [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+            [_lockboxTable setEditing:NO animated:YES];
+        }
     }
 }
 
@@ -188,6 +197,9 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     }
     else
     {
+        [_lockboxes addObject:newLockbox];
+        [[[self navigationItem] leftBarButtonItem] setEnabled:YES];
+        [_lockboxTable reloadData];
         return YES;
     }
 }
@@ -209,8 +221,17 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     else
     {
         _lockboxes = [[NSMutableArray alloc] initWithArray:temp];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [_lockboxTable reloadData];
+            UIBarButtonItem *addLockbox = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addLockbox:)];
+            [[self navigationItem] setRightBarButtonItem:addLockbox];
+            UIBarButtonItem *editLockboxes = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editLockboxes:)];
+            [[self navigationItem] setLeftBarButtonItem:editLockboxes];
+            if([_lockboxes count] == 0)
+            {
+                [editLockboxes setEnabled:NO];
+            }
         });
     }
 }
@@ -323,14 +344,14 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         {
             NSLog(@"Unlocking");
             [selectedLockbox setIsLocked:@0];
-//            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
+            //            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:unlockedAccessoryView];
             [self unlockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
         }
         else
         {
             NSLog(@"Locking");
             [selectedLockbox setIsLocked:@1];
-//            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
+            //            [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:lockedAccessoryView];
             [self lockLockbox:selectedLockbox withSuccessBlock:0 andFailureBlock:0 andIndexPath:indexPath];
         }
     }
@@ -342,7 +363,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([tableView isEditing])
+    if([indexPath section] == 0 && [tableView isEditing])
     {
         return YES;
     }
@@ -350,6 +371,19 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     {
         return NO;
     }
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView beginUpdates];
+    if(editingStyle == UITableViewCellEditingStyleDelete)
+    {
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [tableView setEditing:NO animated:NO];
+        //Update data model
+        [_lockboxes removeObjectAtIndex:[indexPath row]];
+    }
+    [tableView endUpdates];
 }
 
 @end
