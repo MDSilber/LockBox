@@ -79,7 +79,6 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    NSLog(@"View will appear");
 }
 
 - (void)viewDidLoad
@@ -93,6 +92,8 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     [_lockboxTable setDataSource:self];
     [_lockboxTable setBackgroundView:nil];
     [_lockboxTable setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
+    [_lockboxTable setAllowsSelectionDuringEditing:YES];
+    
     [[self view] addSubview:_lockboxTable];
     
     lockedAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"locked.png"]];
@@ -131,7 +132,7 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
 
 -(void)addLockbox:(id)sender
 {
-    AddLockboxViewController *addLockbox = [[AddLockboxViewController alloc] init];
+    AddLockboxViewController *addLockbox = [[AddLockboxViewController alloc] initWithNibName:nil bundle:nil];
     [addLockbox setDelegate:self];
     [addLockbox setTitle:@"Add Lockbox"];
     [[self navigationController] pushViewController:addLockbox animated:YES];
@@ -199,6 +200,31 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
     {
         [_lockboxes addObject:newLockbox];
         [[[self navigationItem] leftBarButtonItem] setEnabled:YES];
+        [_lockboxTable reloadData];
+        return YES;
+    }
+}
+
+-(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+{
+    [_lockboxTable setEditing:NO animated:YES];
+    [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];
+    [[[self navigationItem] leftBarButtonItem] setStyle:UIBarButtonItemStyleBordered];
+    NSManagedObjectContext *context = [lockbox managedObjectContext];
+    
+    [lockbox setName:name];
+    [lockbox setIpAddress:IPAddress];
+    
+    NSError *error = nil;
+    if(![context save:&error])
+    {
+        NSLog(@"Error editing new lockbox: %@", [error description]);
+        UIAlertView *errorEditingAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Error editing your lockbox information. Please try again." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [errorEditingAlert show];
+        return NO;
+    }
+    else
+    {
         [_lockboxTable reloadData];
         return YES;
     }
@@ -369,7 +395,11 @@ UIImageView *lockedAccessoryView, *unlockedAccessoryView;
         //Edit a lockbox
         if([indexPath section] == 0)
         {
-            
+            LockBox *selectedLockbox = [_lockboxes objectAtIndex:[indexPath row]];
+            AddLockboxViewController *editLockboxViewController = [[AddLockboxViewController alloc] initWithLockbox:selectedLockbox];
+            [editLockboxViewController setDelegate:self];
+            [editLockboxViewController setTitle:@"Edit Lockbox"];
+            [[self navigationController] pushViewController:editLockboxViewController animated:YES];
         }
     }
 }

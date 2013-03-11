@@ -7,19 +7,22 @@
 //
 
 #import "AddLockboxViewController.h"
+
 #import <QuartzCore/QuartzCore.h>
 #import "AppDelegate.h"
 
 @interface AddLockboxViewController ()
 
--(void)saveNewLockbox:(id)sender;
+@property (nonatomic, strong) UITextField *lockBoxName, *lockBoxIPAddress;
+@property (nonatomic, strong) UILabel *nameLabel, *IPLabel;
+@property BOOL isEditingLockbox;
+@property (nonatomic, strong) LockBox *lockboxBeingEdited;
+
+-(void)saveLockbox:(id)sender;
 -(BOOL)validateLockboxFields;
 -(BOOL)stringisValidIPAddress:(NSString *)IPAddress;
 
 @end
-
-UITextField *lockBoxName, *lockBoxIPAddress;
-UILabel *nameLabel, *IPLabel;
 
 @implementation AddLockboxViewController
 
@@ -27,31 +30,44 @@ UILabel *nameLabel, *IPLabel;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 20, 220, 30)];
-        [nameLabel setText:@"Lockbox Name"];
-        [nameLabel setBackgroundColor:[UIColor clearColor]];
+        _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 20, 220, 30)];
+        [_nameLabel setText:@"Lockbox Name"];
+        [_nameLabel setBackgroundColor:[UIColor clearColor]];
         
-        lockBoxName = [[UITextField alloc] initWithFrame:CGRectMake(50, 50, 220, 30)];
-        [lockBoxName setBackgroundColor:[UIColor whiteColor]];
-        [[lockBoxName layer] setCornerRadius:7.0];
-        [[lockBoxName layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
-        [[lockBoxName layer] setBorderWidth:1.0];
-        [lockBoxName setClearButtonMode:UITextFieldViewModeWhileEditing];
-        [lockBoxName setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-        [lockBoxName setPlaceholder:@" e.g. Home door"];
+        _lockBoxName = [[UITextField alloc] initWithFrame:CGRectMake(50, 50, 220, 30)];
+        [_lockBoxName setBackgroundColor:[UIColor whiteColor]];
+        [[_lockBoxName layer] setCornerRadius:7.0];
+        [[_lockBoxName layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
+        [[_lockBoxName layer] setBorderWidth:1.0];
+        [_lockBoxName setClearButtonMode:UITextFieldViewModeWhileEditing];
+        [_lockBoxName setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [_lockBoxName setPlaceholder:@" e.g. Home door"];
         
-        IPLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 100, 220, 30)];
-        [IPLabel setText:@"Lockbox IP Address"];
-        [IPLabel setBackgroundColor:[UIColor clearColor]];
+        _IPLabel = [[UILabel alloc] initWithFrame:CGRectMake(50, 100, 220, 30)];
+        [_IPLabel setText:@"Lockbox IP Address"];
+        [_IPLabel setBackgroundColor:[UIColor clearColor]];
         
-        lockBoxIPAddress = [[UITextField alloc] initWithFrame:CGRectMake(50, 130, 220, 30)];
-        [lockBoxIPAddress setBackgroundColor:[UIColor whiteColor]];
-        [[lockBoxIPAddress layer] setCornerRadius:7.0];
-        [[lockBoxIPAddress layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
-        [[lockBoxIPAddress layer] setBorderWidth:1.0];
-        [lockBoxIPAddress setClearButtonMode:UITextFieldViewModeWhileEditing];
-        [lockBoxIPAddress setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-        [lockBoxIPAddress setPlaceholder:@" e.g. 192.168.153.132"];
+        _lockBoxIPAddress = [[UITextField alloc] initWithFrame:CGRectMake(50, 130, 220, 30)];
+        [_lockBoxIPAddress setBackgroundColor:[UIColor whiteColor]];
+        [[_lockBoxIPAddress layer] setCornerRadius:7.0];
+        [[_lockBoxIPAddress layer] setBorderColor:[[UIColor darkGrayColor] CGColor]];
+        [[_lockBoxIPAddress layer] setBorderWidth:1.0];
+        [_lockBoxIPAddress setClearButtonMode:UITextFieldViewModeWhileEditing];
+        [_lockBoxIPAddress setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+        [_lockBoxIPAddress setPlaceholder:@" e.g. 192.168.153.132"];
+        _lockboxBeingEdited = nil;
+    }
+    return self;
+}
+
+-(id)initWithLockbox:(LockBox *)lockbox
+{
+    self = [self initWithNibName:nil bundle:nil];
+    if(self)
+    {
+        [_lockBoxName setText:[lockbox name]];
+        [_lockBoxIPAddress setText:[lockbox ipAddress]];
+        _lockboxBeingEdited = lockbox;
     }
     return self;
 }
@@ -61,12 +77,12 @@ UILabel *nameLabel, *IPLabel;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     [[self view] setBackgroundColor:[UIColor groupTableViewBackgroundColor]];
-    [[self view] addSubview:nameLabel];
-    [[self view] addSubview:lockBoxName];
-    [[self view] addSubview:IPLabel];
-    [[self view] addSubview:lockBoxIPAddress];
+    [[self view] addSubview:_nameLabel];
+    [[self view] addSubview:_lockBoxName];
+    [[self view] addSubview:_IPLabel];
+    [[self view] addSubview:_lockBoxIPAddress];
     
-    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveNewLockbox:)];
+    UIBarButtonItem *saveButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveLockbox:)];
     [[self navigationItem] setRightBarButtonItem:saveButton];
 }
 
@@ -76,37 +92,48 @@ UILabel *nameLabel, *IPLabel;
     // Dispose of any resources that can be recreated.
 }
 
--(void)saveNewLockbox:(id)sender
+-(void)saveLockbox:(id)sender
 {
     if(![self validateLockboxFields])
         return;
     else
     {
-        if([[self delegate] saveNewLockboxWithName:[lockBoxName text] andIPAddress:[lockBoxIPAddress text]])
+        if(_lockboxBeingEdited != nil)
         {
-            [[self navigationController] popViewControllerAnimated:YES];
+            if([[self delegate] saveEditedLockbox:_lockboxBeingEdited withNewName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
+            {
+                [[self navigationController] popViewControllerAnimated:YES];
+            }
+            else return;
         }
-        else return;
+        else
+        {
+            if([[self delegate] saveNewLockboxWithName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
+            {
+                [[self navigationController] popViewControllerAnimated:YES];
+            }
+            else return;
+        }
     }
 }
 
 -(BOOL)validateLockboxFields
 {
-    if([[lockBoxName text] length] == 0)
+    if([[_lockBoxName text] length] == 0)
     {
         UIAlertView *noNameAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a name for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [noNameAlert show];
         return NO;
     }
     
-    if([[lockBoxIPAddress text] length] < 7 || [[lockBoxIPAddress text] length] > 15)
+    if([[_lockBoxIPAddress text] length] < 7 || [[_lockBoxIPAddress text] length] > 15)
     {
         UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [invalidIPAlert show];
         return NO;
     }
     
-    if([self stringisValidIPAddress:[lockBoxIPAddress text]])
+    if([self stringisValidIPAddress:[_lockBoxIPAddress text]])
     {
         UIAlertView *invalidIPAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Please enter a valid IP address for your lockbox" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [invalidIPAlert show];
