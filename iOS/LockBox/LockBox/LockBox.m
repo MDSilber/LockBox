@@ -21,7 +21,7 @@
     self = [super init];
     if(self)
     {
-        [self setIsLocked:@1];
+        [self setIsLocked:@0];
     }
     return self;
 }

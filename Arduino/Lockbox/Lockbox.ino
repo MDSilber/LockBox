@@ -22,7 +22,7 @@ EthernetClient client;
 EthernetServer server(80);
 Servo myservo;
 
-boolean incoming = 0;
+int locked;
 
 //Status lights
 int noConnection = 4;
@@ -151,24 +151,34 @@ void loop()
 
 void lock()
 { 
+  //Check if it's already locked
+  if(locked == 1)
+    return;
+    
   digitalWrite(locked, HIGH);
   digitalWrite(unlocked, LOW);
 
-//  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
-//  myservo.write(1000);
-//  delay(154);
-//  myservo.detach();
+  myservo.attach(9,1000,2000);  // attaches the servo on pin 9 to the servo object
+  myservo.write(1700);
+  delay(100);
+  myservo.detach();
+  locked = 1;
 }
 
 void unlock()
 {
+  //Check if it's already unlocked
+  if(locked == 0)
+    return;
+    
   digitalWrite(unlocked, HIGH);
   digitalWrite(locked, LOW);
 
-//  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
-//  myservo.write(2000);
-//  delay(154);
-//  myservo.detach();
+  myservo.attach(9,1000,2000);  // attaches the servo on pin 9 to the servo object
+  myservo.write(1200);
+  delay(100);
+  myservo.detach();
+  locked = 0;
 }
 
 void httpResponseOK()
