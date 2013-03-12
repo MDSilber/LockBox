@@ -334,7 +334,6 @@
     LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     [newLockbox setName:name];
     [newLockbox setIpAddress:IPAddress];
-    [newLockbox setIsLocked:@1];
     [newLockbox setLockboxNumber:[NSNumber numberWithInt:[_lockboxes count]]];
     
     NSError *error = nil;
