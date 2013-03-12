@@ -22,7 +22,7 @@ EthernetClient client;
 EthernetServer server(80);
 Servo myservo;
 
-int locked;
+int isLocked;
 
 //Status lights
 int noConnection = 4;
@@ -52,7 +52,7 @@ void setup() {
   pinMode(unlocked, OUTPUT);
 
   digitalWrite(noConnection, HIGH);
-  digitalWrite(locked, HIGH);
+  digitalWrite(unlocked, HIGH);
 
   startEthernet();
 }
@@ -162,7 +162,7 @@ void lock()
   myservo.write(1700);
   delay(100);
   myservo.detach();
-  locked = 1;
+  isLocked = 1;
 }
 
 void unlock()
@@ -178,7 +178,7 @@ void unlock()
   myservo.write(1200);
   delay(100);
   myservo.detach();
-  locked = 0;
+  isLocked = 0;
 }
 
 void httpResponseOK()
