@@ -136,9 +136,7 @@
     
     [[self view] addSubview:_lockboxTable];
     
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self loadLockboxes];
-//    });
+    [self loadLockboxes];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -256,7 +254,6 @@
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
     NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$1", [lockbox ipAddress]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
@@ -277,7 +274,6 @@
 
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    //    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/lock", [lockbox ipAddress], [lockbox name]]];
     NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/$2", [lockbox ipAddress]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
