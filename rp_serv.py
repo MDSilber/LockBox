@@ -30,6 +30,6 @@ PORT = 4567
 Handler = MyHandler
 httpd = BaseHTTPServer.HTTPServer((HOST, PORT), Handler)
 httpd.socket = ssl.wrap_socket (httpd.socket, certfile='server.pem', server_side=True)
-print 'serving on ' + HOST + ":" + PORT
+print 'serving on ' + HOST + ":" + str(PORT)
 httpd.serve_forever()
 
