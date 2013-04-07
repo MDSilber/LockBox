@@ -12,15 +12,18 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         
         response['response'] = 200
         response['path'] = self.path
-        response['params'] = self.process_params(self.path)
+        response['query'] = self.process_params(self.path)
         self.wfile.write(json.dumps(response))
 
         self.wfile.close()
 
     def process_params(self,path):
-        path = "".join(path.split("?")[1:])
+        path = path.split("?",1)
+        path = path[1] if len(path) > 1 else ""
+        if path == "":
+            return {}
+
         params = dict(p.split('=', 1) for p in path.split('&'))
-        print params
         return params
         
 
