@@ -65,6 +65,14 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         ###TODO UNLOCKING CODE HERE
         return {'success': True}
 
+    def do_create(self, query):
+        if 'key' not in query or 'lockboxid' not in query:
+            return {'success': False, 'err': 'Creation failed'}
+        key_content = {query['lockboxid']:query['key']}
+        with open(FILENAME, 'w') as json_file:
+            json_file.write(json.dumps(key_content))
+
+        return {'success': True}
 
 HOST = '0.0.0.0'
 PORT = 4567
