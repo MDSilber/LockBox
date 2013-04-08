@@ -3,9 +3,11 @@ import ssl
 import json
 import re
 
+#import BreakfastSerial
+FILENAME = "keys.json"
+
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
-        response = {}
         self.send_response(200);
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
@@ -16,10 +18,11 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         query = self.process_params(path)
 
         if path_no_params == '/lock':
-            self.do_lock(query)
+            self.wfile.write(json.dumps(self.do_lock(query)))
         elif path_no_params == '/unlock':
-            self.do_unlock(query)
+            self.wfile.write(json.dumps(self.do_unlock(query)))
         else:
+            response = {}
             response['response'] = 200
             response['full_path'] = self.path
             response['path_no_params'] = path_no_params
@@ -36,7 +39,19 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return params
 
     def do_lock(self, query):
-        return
+        failure = {'success': False, 'err': 'Authentication Failed'}
+        if 'key' not in query or 'lockboxid' not in query:
+            return failure
+        key_content = ''
+        with open(FILENAME, 'r') as json_file:
+            key_content = json_file.read()
+
+        key_content = json.loads(key_content)
+        if key_content[query['lockboxid']] == query['key']:
+            ###TODO LOCKING CODE HERE
+            return {'success': True}
+
+        return failure
 
     def do_unlock(self, query):
         return
