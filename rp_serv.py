@@ -10,21 +10,36 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
         
-        response['response'] = 200
-        response['path'] = self.path
-        response['query'] = self.process_params(self.path)
-        self.wfile.write(json.dumps(response))
+        path = self.path.split("?",1)
+        path_no_params = path[0]
+        path = path[1] if len(path) > 1 else ""
+        query = self.process_params(path)
+
+        if path_no_params == '/lock':
+            self.do_lock(query)
+        elif path_no_params == '/unlock':
+            self.do_unlock(query)
+        else:
+            response['response'] = 200
+            response['full_path'] = self.path
+            response['path_no_params'] = path_no_params
+            response['query'] = query
+            self.wfile.write(json.dumps(response))
 
         self.wfile.close()
 
     def process_params(self,path):
-        path = path.split("?",1)
-        path = path[1] if len(path) > 1 else ""
         if path == "":
             return {}
 
         params = dict(p.split('=', 1) for p in path.split('&'))
         return params
+
+    def do_lock(self, query):
+        return
+
+    def do_unlock(self, query):
+        return
         
 
 
