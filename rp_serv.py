@@ -21,6 +21,8 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(self.do_lock(query)))
         elif path_no_params == '/unlock':
             self.wfile.write(json.dumps(self.do_unlock(query)))
+        else path_no_params == '/create':
+            self.wfile.write(json.dumps(self.do_create(query)))
         else:
             response = {}
             response['response'] = 200
@@ -55,7 +57,9 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def do_unlock(self, query):
         return
-        
+
+    def do_create(self, query):
+        return
 
 
 HOST = '0.0.0.0'
