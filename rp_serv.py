@@ -21,7 +21,7 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(self.do_lock(query)))
         elif path_no_params == '/unlock':
             self.wfile.write(json.dumps(self.do_unlock(query)))
-        else path_no_params == '/create':
+        elif path_no_params == '/create':
             self.wfile.write(json.dumps(self.do_create(query)))
         else:
             response = {}
@@ -40,26 +40,30 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         params = dict(p.split('=', 1) for p in path.split('&'))
         return params
 
-    def do_lock(self, query):
-        failure = {'success': False, 'err': 'Authentication Failed'}
+    def auth_check(self, query):
         if 'key' not in query or 'lockboxid' not in query:
-            return failure
+            return False
         key_content = ''
         with open(FILENAME, 'r') as json_file:
             key_content = json_file.read()
 
         key_content = json.loads(key_content)
         if key_content[query['lockboxid']] == query['key']:
-            ###TODO LOCKING CODE HERE
-            return {'success': True}
+            return True
 
-        return failure
+        return False 
+
+    def do_lock(self, query):
+        if not self.auth_check(query):
+            return {'success': False, 'err': 'Authentication Failed'}
+        ###TODO LOCKING CODE HERE
+        return {'success': True}
 
     def do_unlock(self, query):
-        return
-
-    def do_create(self, query):
-        return
+        if not self.auth_check(query):
+            return {'success': False, 'err': 'Authentication Failed'}
+        ###TODO UNLOCKING CODE HERE
+        return {'success': True}
 
 
 HOST = '0.0.0.0'
