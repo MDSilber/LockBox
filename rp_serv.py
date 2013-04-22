@@ -2,9 +2,18 @@ import BaseHTTPServer, SimpleHTTPServer
 import ssl
 import json
 import re
+import urllib2
+import sys
+
+from BreakfastSerial import Arduino, Led, Servo
 
 #import BreakfastSerial
 FILENAME = "keys.json"
+board = Arduino()
+servo = Servo(board, 10)
+leds = {'connected': Led(board, 4), 'disconnected': Led(board, 5),
+        'locked': Led(board, 6), 'unlocked': Led(board, 7)}
+is_locked = False
 
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -12,10 +21,6 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
 
-        self.wfile.write("test");
-        self.wfile.close();
-        return
-        
         path = self.path.split("?",1)
         path_no_params = path[0]
         path = path[1] if len(path) > 1 else ""
@@ -58,15 +63,27 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return False 
 
     def do_lock(self, query):
+        global is_locked
         if not self.auth_check(query):
             return {'success': False, 'err': 'Authentication Failed'}
-        ###TODO LOCKING CODE HERE
+        if is_locked:
+            return {'success': True, 'msg': 'Already locked'}
+        servo.set_position(90)
+        leds['unlocked'].off()
+        leds['locked'].on()
+        is_locked = True
         return {'success': True}
 
     def do_unlock(self, query):
+        global is_locked
         if not self.auth_check(query):
             return {'success': False, 'err': 'Authentication Failed'}
-        ###TODO UNLOCKING CODE HERE
+        if not is_locked:
+            return {'success': True, 'msg': 'Already unlocked'}
+        servo.set_position(0)
+        leds['locked'].off()
+        leds['unlocked'].on()
+        is_locked = False
         return {'success': True}
 
     def do_create(self, query):
@@ -77,6 +94,22 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             json_file.write(json.dumps(key_content))
 
         return {'success': True}
+
+#MAIN CODE HERE
+for _,l in leds.iteritems():
+    l.off()
+
+#CHECK IF INTERNET IS ON
+#FROM http://stackoverflow.com/questions/3764291/checking-network-connection
+try:
+    response=urllib2.urlopen('http://74.125.228.4',timeout=1)
+except urllib2.URLError as err:
+    print 'INTERNET COULD NOT CONNECT, EXITING'
+    sys.exit(1)
+
+leds['connected'].on()
+leds['unlocked'].on()
+servo.set_position(0)
 
 HOST = '0.0.0.0'
 PORT = 4567
