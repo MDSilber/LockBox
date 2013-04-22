@@ -11,7 +11,7 @@
 
 @protocol AddLockboxDelegate
 @required
--(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+-(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress andIdentifier:(NSString *)identifier;
 -(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress;
 
 @end
@@ -20,5 +20,6 @@
 @property (nonatomic, weak) id<AddLockboxDelegate> delegate;
 
 -(id)initWithLockbox:(LockBox *)lockbox;
++(NSString *)generateIdentifier:(int)chars;
 
 @end

@@ -323,13 +323,14 @@
 
 #pragma mark - AddLockboxViewControllerDelegate methods
 
--(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress
+-(BOOL)saveNewLockboxWithName:(NSString *)name andIPAddress:(NSString *)IPAddress andIdentifier:(NSString *)identifier
 {
     NSLog(@"Delegate called");
     NSManagedObjectContext *context = [(AppDelegate *)[[UIApplication sharedApplication] delegate] managedObjectContext];
     LockBox *newLockbox = [[LockBox alloc] initWithEntity:[NSEntityDescription entityForName:@"LockBox" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     [newLockbox setName:name];
     [newLockbox setIpAddress:IPAddress];
+    [newLockbox setIdentifier:identifier];
     [newLockbox setLockboxNumber:[NSNumber numberWithInt:[_lockboxes count]]];
     
     NSError *error = nil;
@@ -350,7 +351,7 @@
     }
 }
 
--(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress;
+-(BOOL)saveEditedLockbox:(LockBox *)lockbox withNewName:(NSString *)name andIPAddress:(NSString *)IPAddress
 {
     [_lockboxTable setEditing:NO animated:YES];
     [[[self navigationItem] leftBarButtonItem] setTitle:@"Edit"];

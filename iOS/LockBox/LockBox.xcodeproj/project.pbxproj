@@ -22,7 +22,7 @@
 		280C30F316C70287008E572D /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 280C30EF16C6FC1C008E572D /* SFHFKeychainUtils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		280C30F516C702F5008E572D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 280C30F416C702F4008E572D /* Security.framework */; };
 		2841A5F216C1E4C0001B6F10 /* LockBoxListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2841A5F116C1E4C0001B6F10 /* LockBoxListViewController.m */; };
-		28851C5B16EEA1DA0081693A /* LockBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 28851C5A16EEA1DA0081693A /* LockBox.m */; };
+		284A5CF71724D55D00AD3E9A /* LockBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 284A5CF61724D55D00AD3E9A /* LockBox.m */; };
 		2888E21916D1E86500B2DF5B /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 2888E20716D1E86500B2DF5B /* AFHTTPClient.m */; };
 		2888E21A16D1E86500B2DF5B /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2888E20916D1E86500B2DF5B /* AFHTTPRequestOperation.m */; };
 		2888E21B16D1E86500B2DF5B /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2888E20B16D1E86500B2DF5B /* AFImageRequestOperation.m */; };
@@ -67,8 +67,8 @@
 		280C30F416C702F4008E572D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2841A5F016C1E4C0001B6F10 /* LockBoxListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockBoxListViewController.h; sourceTree = "<group>"; };
 		2841A5F116C1E4C0001B6F10 /* LockBoxListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockBoxListViewController.m; sourceTree = "<group>"; };
-		28851C5916EEA1DA0081693A /* LockBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockBox.h; sourceTree = "<group>"; };
-		28851C5A16EEA1DA0081693A /* LockBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockBox.m; sourceTree = "<group>"; };
+		284A5CF51724D55D00AD3E9A /* LockBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LockBox.h; sourceTree = "<group>"; };
+		284A5CF61724D55D00AD3E9A /* LockBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LockBox.m; sourceTree = "<group>"; };
 		2888E20616D1E86500B2DF5B /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		2888E20716D1E86500B2DF5B /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		2888E20816D1E86500B2DF5B /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -161,8 +161,8 @@
 				28023B6716C0D9EE004C9E8A /* AppDelegate.h */,
 				28023B6816C0D9EF004C9E8A /* AppDelegate.m */,
 				28023B7016C0D9EF004C9E8A /* LockBox.xcdatamodeld */,
-				28851C5916EEA1DA0081693A /* LockBox.h */,
-				28851C5A16EEA1DA0081693A /* LockBox.m */,
+				284A5CF51724D55D00AD3E9A /* LockBox.h */,
+				284A5CF61724D55D00AD3E9A /* LockBox.m */,
 				2841A5F016C1E4C0001B6F10 /* LockBoxListViewController.h */,
 				2841A5F116C1E4C0001B6F10 /* LockBoxListViewController.m */,
 				280C30F016C6FF67008E572D /* LockboxTableViewCell.h */,
@@ -317,7 +317,7 @@
 				2888E21F16D1E86500B2DF5B /* AFURLConnectionOperation.m in Sources */,
 				2888E22016D1E86500B2DF5B /* AFXMLRequestOperation.m in Sources */,
 				2888E22116D1E86500B2DF5B /* UIImageView+AFNetworking.m in Sources */,
-				28851C5B16EEA1DA0081693A /* LockBox.m in Sources */,
+				284A5CF71724D55D00AD3E9A /* LockBox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

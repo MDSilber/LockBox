@@ -92,6 +92,18 @@
     // Dispose of any resources that can be recreated.
 }
 
++(NSString *)generateIdentifier:(int)numChars
+{
+    NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    NSMutableString *identifier = [NSMutableString stringWithCapacity:numChars];
+    for(int i = 0; i < numChars; i++)
+    {
+        [identifier appendFormat:@"%C", [letters characterAtIndex:(arc4random() % [letters length])]];
+    }
+    
+    return identifier;
+}
+
 -(void)saveLockbox:(id)sender
 {
     if(![self validateLockboxFields])
@@ -108,7 +120,7 @@
         }
         else
         {
-            if([[self delegate] saveNewLockboxWithName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
+            if([[self delegate] saveNewLockboxWithName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text] andIdentifier:[AddLockboxViewController generateIdentifier:20]])
             {
                 [[self navigationController] popViewControllerAnimated:YES];
             }
