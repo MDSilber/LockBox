@@ -115,8 +115,8 @@
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        NSString *success = (NSString*)[JSON valueForKeyPath:@"success"];
-        if ([success isEqualToString:@"false"]) {
+        BOOL success = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
+        if (success) {
             [self showFailureAlert];
             return;
         }
