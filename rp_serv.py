@@ -7,12 +7,12 @@ import sys
 
 from BreakfastSerial import Arduino, Led, Servo
 
-#import BreakfastSerial
+import BreakfastSerial
 FILENAME = "keys.json"
-#board = Arduino()
-#servo = Servo(board, 10)
-#leds = {'connected': Led(board, 4), 'disconnected': Led(board, 5),
-#        'locked': Led(board, 6), 'unlocked': Led(board, 7)}
+board = Arduino()
+servo = Servo(board, 10)
+leds = {'connected': Led(board, 4), 'disconnected': Led(board, 5),
+        'locked': Led(board, 6), 'unlocked': Led(board, 7)}
 is_locked = False
 
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
@@ -68,9 +68,9 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             return {'success': False, 'err': 'Authentication Failed'}
         if is_locked:
             return {'success': True, 'msg': 'Already locked'}
-        #servo.set_position(90)
-        #leds['unlocked'].off()
-        #leds['locked'].on()
+        servo.set_position(90)
+        leds['unlocked'].off()
+        leds['locked'].on()
         is_locked = True
         return {'success': True}
 
@@ -80,9 +80,9 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             return {'success': False, 'err': 'Authentication Failed'}
         if not is_locked:
             return {'success': True, 'msg': 'Already unlocked'}
-        #servo.set_position(0)
-        #leds['locked'].off()
-        #leds['unlocked'].on()
+        servo.set_position(0)
+        leds['locked'].off()
+        leds['unlocked'].on()
         is_locked = False
         return {'success': True}
 
@@ -102,8 +102,8 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return {'success': True}
 
 #MAIN CODE HERE
-#for _,l in leds.iteritems():
-#    l.off()
+for _,l in leds.iteritems():
+    l.off()
 
 #CHECK IF INTERNET IS ON
 #FROM http://stackoverflow.com/questions/3764291/checking-network-connection
@@ -113,9 +113,9 @@ except urllib2.URLError as err:
     print 'INTERNET COULD NOT CONNECT, EXITING'
     sys.exit(1)
 
-#leds['connected'].on()
-#leds['unlocked'].on()
-#servo.set_position(0)
+leds['connected'].on()
+leds['unlocked'].on()
+servo.set_position(0)
 
 HOST = '0.0.0.0'
 PORT = 4567
