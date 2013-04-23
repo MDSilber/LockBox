@@ -10,6 +10,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "AppDelegate.h"
+#import "AFNetworking.h"
 
 @interface AddLockboxViewController ()
 
@@ -108,8 +109,15 @@
 {
     if(![self validateLockboxFields])
         return;
-    else
-    {
+    
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/create/?key=%@&lockboxid=%@", [_lockBoxIPAddress text], [AddLockboxViewController generateIdentifier:20], [_lockBoxName text]]];
+    NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
+                                                                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        NSString *success = (NSString*)[JSON valueForKeyPath:@"success"];
+        if ([success isEqualToString:@"false"]) {
+            return;
+        }
         if(_lockboxBeingEdited != nil)
         {
             if([[self delegate] saveEditedLockbox:_lockboxBeingEdited withNewName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
@@ -127,6 +135,10 @@
             else return;
         }
     }
+                                                                                        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        return;
+                                                                                        }];
+    [operation start];
 }
 
 -(BOOL)validateLockboxFields
