@@ -111,35 +111,36 @@
     if(![self validateLockboxFields])
         return;
     
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/create/?key=%@&lockboxid=%@", [_lockBoxIPAddress text], [AddLockboxViewController generateIdentifier:20], [_lockBoxName text]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:4567/create?key=%@&lockboxid=%@", [_lockBoxIPAddress text], [AddLockboxViewController generateIdentifier:20], [_lockBoxName text]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
-                                                                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        BOOL success = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
-        if (success) {
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            BOOL success = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
+            if (success) {
+                [self showFailureAlert];
+                return;
+            }
+            if(_lockboxBeingEdited != nil)
+            {
+                if([[self delegate] saveEditedLockbox:_lockboxBeingEdited withNewName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
+                {
+                    [[self navigationController] popViewControllerAnimated:YES];
+                }
+                else return;
+            }
+            else
+            {
+                if([[self delegate] saveNewLockboxWithName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text] andIdentifier:[AddLockboxViewController generateIdentifier:20]])
+                {
+                    [[self navigationController] popViewControllerAnimated:YES];
+                }
+                else return;
+            }
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             [self showFailureAlert];
             return;
-        }
-        if(_lockboxBeingEdited != nil)
-        {
-            if([[self delegate] saveEditedLockbox:_lockboxBeingEdited withNewName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text]])
-            {
-                [[self navigationController] popViewControllerAnimated:YES];
-            }
-            else return;
-        }
-        else
-        {
-            if([[self delegate] saveNewLockboxWithName:[_lockBoxName text] andIPAddress:[_lockBoxIPAddress text] andIdentifier:[AddLockboxViewController generateIdentifier:20]])
-            {
-                [[self navigationController] popViewControllerAnimated:YES];
-            }
-            else return;
-        }
-    }
-                                                                                        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                                                                            [self showFailureAlert];                                                                                            return;
-                                                                                        }];
+        }];
     [operation start];
 }
 

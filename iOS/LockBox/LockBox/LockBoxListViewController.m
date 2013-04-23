@@ -254,7 +254,7 @@
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/lock/?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/lock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
     //Handles putting networking in the background
@@ -274,7 +274,7 @@
 
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/unlock/?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/unlock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
     //Handles putting networking in the background
