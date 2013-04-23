@@ -9,6 +9,7 @@
 #import "AddLockboxViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIAlertView.h>
 #import "AppDelegate.h"
 #import "AFNetworking.h"
 
@@ -116,6 +117,7 @@
                                                                                         success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSString *success = (NSString*)[JSON valueForKeyPath:@"success"];
         if ([success isEqualToString:@"false"]) {
+            [self showFailureAlert];
             return;
         }
         if(_lockboxBeingEdited != nil)
@@ -136,7 +138,7 @@
         }
     }
                                                                                         failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-        return;
+                                                                                            [self showFailureAlert];                                                                                            return;
                                                                                         }];
     [operation start];
 }
@@ -172,6 +174,12 @@
     NSString *IPAddressRegex = @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
     NSPredicate *IPAddressTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", IPAddressRegex];
     return [IPAddressTest evaluateWithObject:IPAddress];
+}
+
+-(void)showFailureAlert
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Creation Failed" message:@"Try again?" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
 }
 
 @end
