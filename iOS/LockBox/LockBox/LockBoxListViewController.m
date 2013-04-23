@@ -254,15 +254,17 @@
 
 -(void)lockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void(^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/lock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:4567/lock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
                                                                                             [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:[self newLockedImageView]];
-                                                                                            if(success != 0)
+                                                                                            BOOL didSucceed = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
+                                                                                            if (didSucceed && success != 0) {
                                                                                                 success();
+                                                                                            }
                                                                                         }
                                                                                         failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
                                                                                             NSLog(@"Error locking lockbox: %@", [error description]);
@@ -274,15 +276,18 @@
 
 -(void)unlockLockbox:(LockBox *)lockbox withSuccessBlock:(void (^)())success andFailureBlock:(void (^)())failure andIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/unlock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
+    NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:4567/unlock?key=%@&lockboxid=%@", [lockbox ipAddress], [lockbox identifier], [lockbox name]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     
     //Handles putting networking in the background
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
                                                                                         success:^(NSURLRequest *request, NSURLResponse *response, id JSON){
                                                                                             [[_lockboxTable cellForRowAtIndexPath:indexPath] setAccessoryView:[self newUnlockedImageView]];
-                                                                                            if(success != 0)
+                                                                                            BOOL didSucceed = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
+                                                                                            if (didSucceed && success != 0) {
                                                                                                 success();
+                                                                                            }
+}
                                                                                         }
                                                                                         failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
                                                                                             NSLog(@"Error unlocking lockbox: %@", [error description]);

@@ -110,13 +110,14 @@
 {
     if(![self validateLockboxFields])
         return;
-    
+
     NSURL *lockboxURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@:4567/create?key=%@&lockboxid=%@", [_lockBoxIPAddress text], [AddLockboxViewController generateIdentifier:20], [_lockBoxName text]]];
     NSURLRequest *lockboxRequest = [NSURLRequest requestWithURL:lockboxURL];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:lockboxRequest
         success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
             BOOL success = [(NSString*)[JSON valueForKeyPath:@"success"] boolValue];
-            if (success) {
+
+            if (!success) {
                 [self showFailureAlert];
                 return;
             }
