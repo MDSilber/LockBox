@@ -90,8 +90,14 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if 'key' not in query or 'lockboxid' not in query:
             return {'success': False, 'err': 'Creation failed'}
         key_content = {query['lockboxid']:query['key']}
-        with open(FILENAME, 'w') as json_file:
-            json_file.write(json.dumps(key_content))
+        j = {}
+        content = ''
+        with open(FILENAME, 'w+') as json_file:
+            content = json_file.read()
+            if content != '':
+                j = json.loads(content)
+            j.update(key_content)
+            json_file.write(json.dumps(j))
 
         return {'success': True}
 

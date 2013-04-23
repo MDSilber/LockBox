@@ -287,7 +287,6 @@
                                                                                             if (didSucceed && success != 0) {
                                                                                                 success();
                                                                                             }
-}
                                                                                         }
                                                                                         failure:^(NSURLRequest *request, NSURLResponse *response, NSError *error, id JSON){
                                                                                             NSLog(@"Error unlocking lockbox: %@", [error description]);
