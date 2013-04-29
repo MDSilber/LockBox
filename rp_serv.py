@@ -11,17 +11,17 @@ import BreakfastSerial
 FILENAME = "keys.json"
 board = Arduino()
 servo = Servo(board, 10)
-leds = {'connected': Led(board, 4), 'disconnected': Led(board, 5),
+leds = {'connected': Led(board, 5), 'disconnected': Led(board, 4),
         'locked': Led(board, 6), 'unlocked': Led(board, 7)}
 is_locked = False
 
 class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200);
+        self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
 
-        path = self.path.split("?",1)
+        path = self.path.split("?", 1)
         path_no_params = path[0]
         path = path[1] if len(path) > 1 else ""
         query = self.process_params(path)
@@ -42,7 +42,7 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         self.wfile.close()
 
-    def process_params(self,path):
+    def process_params(self, path):
         if path == "":
             return {}
 
@@ -102,13 +102,13 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return {'success': True}
 
 #MAIN CODE HERE
-for _,l in leds.iteritems():
+for _, l in leds.iteritems():
     l.off()
 
 #CHECK IF INTERNET IS ON
 #FROM http://stackoverflow.com/questions/3764291/checking-network-connection
 try:
-    response=urllib2.urlopen('http://74.125.228.4',timeout=1)
+    response=urllib2.urlopen('http://74.125.228.4', timeout=1)
 except urllib2.URLError as err:
     print 'INTERNET COULD NOT CONNECT, EXITING'
     sys.exit(1)
