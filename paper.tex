@@ -69,7 +69,7 @@
 %   TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{L.U.M.P.: Locking and Unlocking Mobile Platform}} % Article title
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{LUMP: Locking and Unlocking Mobile Platform}} % Article title
 
 \author{
     \large
@@ -100,7 +100,7 @@
 
 \begin{abstract}
 
-While a great deal of research has gone into software-based security on mobile devices, the technologies of hardware and software have not been combined to work together. Furthermore, even with the explosion of mobile computing in the last decade, there have been few mainstream implementations of systems that leverage mobile devices to control physical locks. With an iOS application, an Arduino Uno, a servo motor, and a Raspberry Pi, we leverage technologies such as SSL and Firmata to allow for secure connections from a mobile app to induce mechanical latches which act as locks.
+While a great deal of research has gone into software-based security on mobile devices, the technologies of hardware and software have not been combined to work together. Furthermore, even with the explosion of mobile computing in the last decade, there have been few mainstream implementations of systems that leverage mobile devices to control physical locks. With an iOS application, an Arduino Uno, a servo motor, and a Raspberry Pi, we leverage technologies such as SSL and Firmata to allow for secure connections from a mobile app to engage mechanical latches which act as locks.
 
 \end{abstract}
 
@@ -202,7 +202,9 @@ One thing to note is that all networking requests are performed using the extern
 \caption{Server Side architecture}
 \end{figure}
 
-The server side architecture is made up of a couple of different layers. The top layer is a Python server that only accepts HTTPS requests, in order to ensure security. The server simply listens for locking and unlocking requests. Upon receiving a request, it checks the parameters of the request to ensure that the proper identifier for that particular lock has been passed. The server also sends serial information to the hardware when processing the requests, which will be discussed in more detail below. \\
+The server side architecture is made up of a couple of different layers. The top layer is a Python server that only accepts HTTPS requests, in order to ensure security. The server simply listens for locking, unlocking, and creation requests. Upon receiving a request, it checks the parameters of the request to ensure that the proper identifier for that particular lock has been passed. The server also sends serial information to the hardware when processing the requests, which will be discussed in more detail below. \\
+
+The server uses two python libraries in conjunction, \texttt{ssl} \cite{pyssl} and \texttt{BaseHTTPServer} \cite{BaseHTTPServer}, which enable a basic http server to run with an ssl socket enabled. With this, we are able to keep this server running and accepting connections, but only responding to secure requests such that the metadata sent with each request cannot be seen by third parties. \\
 
 The server itself runs on a Raspberry Pi Model B using Python 2.7.3. The Raspberry Pi runs Raspbian \cite{raspbian}, a particular Debian distribution designed with the hardware constraints of the Raspberry Pi in mind, and comes pre-installed with Python on it. This feature combined with the simplicity of Python as a programming language made the Raspberry Pi a particularly good computer on which we could run our server. The integration of the Raspberry Pi in the hardware design of the experiment will be discussed the next section. \\
 
@@ -341,6 +343,14 @@ analogPin;, te. "Arduino - Firmata ." Arduino. \url{http://arduino.cc/en/Referen
 
 \bibitem{codinghorror}
 Atwood, Jeff. "Coding Horror: What You Have, What You Know, What You Are." Coding Horror. \url{http://www.codinghorror.com/blog/2007/02/what-you-have-what-you-know-what-you-are.html} (accessed May 4, 2013).
+
+\bibitem{BaseHTTPServer}
+"20.18. BaseHTTPServer --- Basic HTTP server --- Python v2.7.4 documentation." Overview --- Python v2.7.4 documentation. http://docs.python.org/2/library/basehttpserver.html (accessed May 5, 2013).
+
+\bibitem{pyssl}
+tes. "17.3. ssl --- TLS/SSL wrapper for socket objects --- Python v2.7.4 documentation." Overview --- Python v2.7.4 documentation. http://docs.python.org/2/library/ssl.html (accessed May 5, 2013).
+
+
 
 \end{thebibliography}
 
