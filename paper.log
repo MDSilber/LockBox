@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  5 MAY 2013 19:49
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  5 MAY 2013 19:52
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -810,6 +810,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 249--250
  []
 
 
+LaTeX Warning: Citation `airbnb' on page 8 undefined on input line 251.
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 251--252
 
  []
@@ -1146,21 +1149,28 @@ Overfull \hbox (31.91861pt too wide) in paragraph at lines 344--345
 \T1/cmtt/m/n/10 what-[]you-[]have-[]what-[]you-[]know-[]what-[]you-[]are .
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 352.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 354.
 [10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 352.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 354.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 352.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 352.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 354.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 354.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: B274DC317930902EBFF4868EA4634423;887.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 352.
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 354.
  ) 
 Here is how much of TeX's memory you used:
- 9534 strings out of 493633
- 145505 string characters out of 3143378
+ 9536 strings out of 493633
+ 145524 string characters out of 3143378
  363108 words of memory out of 3000000
- 12402 multiletter control sequences out of 15000+200000
+ 12403 multiletter control sequences out of 15000+200000
  56269 words of font info for 237 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
  36i,7n,38p,1134b,639s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1172,10 +1182,10 @@ mf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive/2011/texmf
 -dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2011/texmf-dist/f
 onts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2011/texmf-dist/fonts/ty
 pe1/urw/palatino/uplri8a.pfb>
-Output written on paper.pdf (10 pages, 1910612 bytes).
+Output written on paper.pdf (10 pages, 1911295 bytes).
 PDF statistics:
- 296 PDF objects out of 1000 (max. 8388607)
- 266 compressed objects within 3 object streams
- 59 named destinations out of 1000 (max. 500000)
+ 299 PDF objects out of 1000 (max. 8388607)
+ 269 compressed objects within 3 object streams
+ 60 named destinations out of 1000 (max. 500000)
  39071 words of extra memory for PDF output out of 42996 (max. 10000000)
 

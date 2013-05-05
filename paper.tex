@@ -248,7 +248,7 @@ The problem with using the latch in the way we did with one small servo is that 
 
 The third, software-based solution would be to put more research into secure storage on the server-side. Currently, no encryption is performed on the keys and lockbox IDs, only on the calls which initially pass them to the server from the iOS app. Less focus was put into this because we were more concerned with the potential physical security issues than any software based issues which would rely on file access. Ideally, the data would be stored not on the server at all but for the purposes of this prototype we were more concerned with the mechanics of a secure request to result directly affecting a physical lock. These issues are all likely solvable, and would be necessary before any commercial implementation was pursued.\\
 
-Furthermore, more features such as distributable, expiring keys could be implemented to be used by establishments such as hotels, bed and breakfasts, and hosts on sites such as Airbnb. Perhaps a separate app for owners of such establishments would be the ideal way to implement such a solution. A distribution system like this could greatly simplify the problem of keeping track of external keys. Extending the stay of a particular visitor would be as easy as changing a number in an admin console or mobile app. Bed and breakfast owners could also revoke keys remotely, as well as check the status of particular doors in the hotel (to see if one was left unlocked, for example).\\
+Furthermore, more features such as distributable, expiring keys could be implemented to be used by establishments such as hotels, bed and breakfasts, and hosts on sites such as Airbnb \cite{airbnb}. Perhaps a separate app for owners of such establishments would be the ideal way to implement such a solution. A distribution system like this could greatly simplify the problem of keeping track of external keys. Extending the stay of a particular visitor would be as easy as changing a number in an admin console or mobile app. Bed and breakfast owners could also revoke keys remotely, as well as check the status of particular doors in the hotel (to see if one was left unlocked, for example).\\
 
 
 \section{Acknowledgments}
@@ -343,6 +343,8 @@ analogPin;, te. "Arduino - Firmata ." Arduino. \url{http://arduino.cc/en/Referen
 \bibitem{codinghorror}
 Atwood, Jeff. "Coding Horror: What You Have, What You Know, What You Are." Coding Horror. \url{http://www.codinghorror.com/blog/2007/02/what-you-have-what-you-know-what-you-are.html} (accessed May 4, 2013).
 
+\bibitem{airbnb}
+"Airbnb." Airbnb. \url{https://www.airbnb.com/} (accessed May 4, 2013).
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
