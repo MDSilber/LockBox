@@ -18,3 +18,8 @@ DerivedData
 .idea/
 *.pem
 *.swp
+*.aux
+*.log
+*.pdf
+*.out
+*.synctex.gz
