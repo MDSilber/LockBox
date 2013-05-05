@@ -75,7 +75,7 @@
     \large
     \textsc{Mason Silber \quad Vivek Bhagwat}\\[2mm] % Your name
     \normalsize Columbia University \\ % Your institution
-    \normalsize \{mds2161,vsb2110\}@columbia.edu % Your email address
+    \normalsize \{mds2161, vsb2110\}@columbia.edu % Your email address
     \vspace{-5mm}
 }
 \date{}
@@ -246,13 +246,15 @@ Though LUMP has most of its components working together, improvements could be m
 
 With regard to mobility and adaptability, the connection between the server and the Arduino was not fully functional when the server was running on Raspberry Pi \cite{breakfastserialissue}. The connection was inconsistent and often failed for reasons we failed to completely debug. As a result, the solution relied on a more traditional laptop running a server --- an overhead that is unnecessary in both physical and fiscal cost. With the raspberry pi working, the solution would be more mobile.\\
 
-The problem with using the latch in the way we did with one small servo is that the latch is not necessarily physically very strong. This is an obvious problem with our prototype, but not a problem with our overall solution. The adaptable nature of LUMP allows for stronger servos and latches to be attached to the arduino, with power being the only limitation.\\
+The problem with using the latch in the way we did with one small servo is that the latch is not necessarily physically very strong. This is an obvious problem with our prototype, but not a problem with our overall solution. The adaptable nature of LUMP allows for stronger servos and latches to be attached to the Arduino, with power being the only limitation.\\
 
-The third, software-based solution would be to put more research into secure storage on the server-side. Currently, no encryption is performed on the keys and lockbox ids, only on the calls which initially pass them to the server from the iOS app. Less focus was put into this because we were more concerned with the potential physical security issues than any software based issues which would rely on file access. Ideally, the data would be stored not on the server at all but for the purposes of this prototype we were more concerned with the mechanics of a secure request to result directly affecting a physical lock. These issues are all likely solvable, and would be necessary before any commercial implementation was pursued.\\
+The third, software-based solution would be to put more research into secure storage on the server-side. Currently, no encryption is performed on the keys and lockbox IDs, only on the calls which initially pass them to the server from the iOS app. Less focus was put into this because we were more concerned with the potential physical security issues than any software based issues which would rely on file access. Ideally, the data would be stored not on the server at all but for the purposes of this prototype we were more concerned with the mechanics of a secure request to result directly affecting a physical lock. These issues are all likely solvable, and would be necessary before any commercial implementation was pursued.\\
+
+Furthermore, more features such as distributable, expiring keys could be implemented to be used by establishments such as hotels, bed and breakfasts, and hosts on sites such as Airbnb \cite{airbnb}. Perhaps a separate app for owners of such establishments would be the ideal way to implement such a solution. A distribution system like this could greatly simplify the problem of keeping track of external keys. Extending the stay of a particular visitor would be as easy as changing a number in an admin console or mobile app. Bed and breakfast owners could also revoke keys remotely, as well as check the status of particular doors in the hotel (to see if one was left unlocked, for example).\\
 
 
 \section{Acknowledgments}
-We would like to thank Professor Jason Nieh for the advice and guidance he has provided for us throughout the semester with regards to our project. We would also like to thank Swift \cite{swift} for accepting our pull request on BreakfastSerial and for helping us implement the Servo component for the BreakfastSerial module. Lastly, we would like to thank the Columbia University Electrical Engineering department for lending us electronics components when we needed them, and eBay for providing a platform through which to buy cheap, mass produced electronics. 
+We would like to thank Professor Jason Nieh for the advice and guidance he has provided for us throughout the semester with regards to our project \cite{nieh}. We would also like to thank Swift \cite{swift} for accepting our pull request on BreakfastSerial and for helping us implement the Servo component for the BreakfastSerial module. Lastly, we would like to thank the Columbia University Electrical Engineering department for lending us electronics components when we needed them, and eBay for providing a platform through which to buy cheap, mass produced electronics. 
 
 
 
@@ -291,7 +293,6 @@ D'Orazio, Dante. "Dropbox two-step verification security option to lock down you
 
 \bibitem{cryptography}
 Delfs, Hans, and Helmut Knebl. "Introduction to Cryptography: Principles and Applications - Hans Delfs, Helmut Knebl - Google Books." Google Books. \url{http://books.google.com/books?id=Nnvhz_VqAS4C&pg=PA11#v=onepage&q&f=false} (accessed May 4, 2013).
-
 
 \bibitem{firmata}
 "Firmata Arduino Libraries." Github. \url{https://github.com/firmata/arduino} (accessed May 13, 2004).
@@ -350,8 +351,8 @@ Atwood, Jeff. "Coding Horror: What You Have, What You Know, What You Are." Codin
 \bibitem{pyssl}
 tes. "17.3. ssl --- TLS/SSL wrapper for socket objects --- Python v2.7.4 documentation." Overview --- Python v2.7.4 documentation. http://docs.python.org/2/library/ssl.html (accessed May 5, 2013).
 
-
-
+\bibitem{airbnb}
+"Airbnb." Airbnb. \url{https://www.airbnb.com/} (accessed May 4, 2013).
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
