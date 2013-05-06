@@ -220,7 +220,7 @@ The hardware apparatus for this experiment was not particularly complex because 
 \centering
 %\includegraphics[width=0.5\textwidth]{circuit.png}
 \includegraphics[height=3.5in]{circuit.png}
-\caption{Circuit}
+\caption{Hardware Schematic}
 \end{figure*}
 
 The Arduino has a number of components which it controls. Pins 4 and 5 connect to a tri-color LED, which indicates whether a network connection is available or not. If not, the server cannot receive requests. Pin 4 triggers the red LED within the tri-color LED, signaling no network connection, and pin 5 triggers the blue LED within the tri-color LED, signaling successful connection to the network. Pins 6 and 7 also control a status indicating tri-color LED, which indicates whether the lock is locked or unlocked. Pin 6 triggers the red LED, and is turned on when the lock is locked, and pin 7 triggers the green LED, which is activated when the lock is unlocked. Both tri-color LEDs are connected to ground via two 100 $\Omega$ resistors. \\
